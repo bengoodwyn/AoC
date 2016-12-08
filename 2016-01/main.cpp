@@ -2,6 +2,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <set>
+#include <tuple>
 
 std::string nextCommand(std::istream& input) {
 	std::string command;
@@ -26,6 +28,8 @@ enum Direction {
 int currentDirection = NORTH;
 int x = 0;
 int y = 0;
+std::set<std::pair<int
+	, int>> spots;
 
 void turn(char direction) {
 	int delta;
@@ -47,36 +51,49 @@ void turn(char direction) {
 	std::cout << direction << ": new direction: " << currentDirection << std::endl;
 }
 
-void go(int distance) {
-	switch (currentDirection) {
-		case NORTH:
-			y += distance;
-			break;
-		case EAST:
-			x += distance;
-			break;
-		case SOUTH:
-			y -= distance;
-			break;
-		case WEST:
-			x -= distance;
-			break;
-		default:
-			throw std::exception();
+bool go(int distance) {
+	for (auto i = 0; i < distance; i++) {
+		switch (currentDirection) {
+			case NORTH:
+				y += 1;
+				break;
+			case EAST:
+				x += 1;
+				break;
+			case SOUTH:
+				y -= 1;
+				break;
+			case WEST:
+				x -= 1;
+				break;
+			default:
+				throw std::exception();
+		}
+		std::cout << i << "/" << distance << ": x=" << x << " y=" << y << std::endl;
+		auto location = std::pair<int
+			, int>(x
+			, y);
+		if (spots.end() != spots.find(location)) {
+			return true;
+		}
+		spots.insert(location);
 	}
-	std::cout << distance << ": x=" << x << " y=" << y << std::endl;
+	return false;
 }
 
-void processCommand(std::string command) {
+bool processCommand(std::string command) {
 	turn(command.at(0));
-	go(std::stoi(command.substr(1)));
+	return go(std::stoi(command.substr(1)));
 }
 
 int main() {
 	std::ifstream input("input");
 	std::string command;
 	while (!(command = nextCommand(input)).empty()) {
-		processCommand(command);
+		if (processCommand(command)) {
+			std::cout << "Repeat visit" << std::endl;
+			break;
+		}
 	}
 	std::cout << "Distance: " << std::abs(x) + std::abs(y) << std::endl;
 	return 0;
