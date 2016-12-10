@@ -43,3 +43,18 @@ TEST_F(PixelTest, OverwritingAPixelIsNotCountedAsLit) {
 TEST_F(PixelTest, ThrowsOnAnOddCommand) {
 	EXPECT_THROW(grid->runCommand("Stop, collaborate and listen"), PixelGrid::UnknownCommand);
 }
+
+TEST_F(PixelTest, ThrowsIfRowNotFollowedByY) {
+	EXPECT_THROW(grid->runCommand("rotate row x=1 by 2"), PixelGrid::MalformedCommand);
+}
+
+TEST_F(PixelTest, ThrowsIfYNotFollowedByEqual) {
+	EXPECT_THROW(grid->runCommand("rotate row y_1 by 2"), PixelGrid::MalformedCommand);
+}
+
+TEST_F(PixelTest, CanShiftToRightAndBackFill) {
+	grid->runCommand("rect 2x3");
+	grid->runCommand("rotate row y=0 by 2");
+	grid->runCommand("rect 2x3");
+	EXPECT_EQ(8, grid->litPixelCount());
+}
