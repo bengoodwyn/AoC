@@ -8,6 +8,7 @@
 #include <set>
 #include <sstream>
 #include <vector>
+#include <limits>
 
 std::vector<std::map<char, int>> columnFrequencies;
 
@@ -26,15 +27,15 @@ void processLine(std::string line) {
 std::string correctedMessage() {
 	std::string message;
 	for (auto column: columnFrequencies) {
-		int highestFrequency = 0;
-		int mostFrequentCharacter = '\0';
+		int lowestFrequency = std::numeric_limits<int>::max();
+		int leastFrequentCharacter = '\0';
 		for (auto frequency : column) {
-			if (frequency.second > highestFrequency) {
-				highestFrequency = frequency.second;
-				mostFrequentCharacter = frequency.first;
+			if (frequency.second < lowestFrequency) {
+				lowestFrequency = frequency.second;
+				leastFrequentCharacter = frequency.first;
 			}
 		}
-		message += mostFrequentCharacter;
+		message += leastFrequentCharacter;
 	}
 	return message;
 }
