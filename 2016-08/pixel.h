@@ -12,12 +12,7 @@ public:
 		std::string command;
 		stream >> command;
 		if (command == std::string("rect")) {
-			int width;
-			int height;
-			stream >> width;
-			stream.get();
-			stream >> height;
-			litPixels += width * height;
+			rect(stream);
 		}
 	}
 
@@ -26,5 +21,14 @@ public:
 	}
 
 private:
+	void rect(std::istream& stream) {
+		int width;
+		int height;
+		stream >> width;
+		stream.get();
+		stream >> height;
+		litPixels += width * height;
+	}
+
 	int litPixels{0};
 };
