@@ -5,6 +5,8 @@
 
 using Value = std::uint64_t;
 
+class Bot;
+
 class Bot {
 public:
 	void receive(Value value) {
@@ -25,6 +27,11 @@ public:
 		auto value = values.front();
 		values.pop_front();
 		return value;
+	}
+
+	void giveLowValueTo(Bot& otherBot) {
+		auto value = takeLowValue();
+		otherBot.receive(value);
 	}
 
 private:

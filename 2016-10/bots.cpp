@@ -91,6 +91,14 @@ TEST_F(BotTest, CanTakeTwoValuesInReverseOrderUsingHigh) {
 	EXPECT_EQ(50, bot->takeHighValue());
 }
 
+TEST_F(BotTest, CanGiveLowValueToAnotherBot) {
+	Bot otherBot;
+	Value value(127);
+	bot->receive(value);
+	bot->giveLowValueTo(otherBot);
+	EXPECT_EQ(127, otherBot.takeLowValue());
+}
+
 class ValueTest
 	: public ::testing::Test {
 protected:
