@@ -25,7 +25,7 @@ class BotTest
 	: public ::testing::Test {
 protected:
 	virtual void SetUp() override {
-		bot.reset(new Bot);
+		bot.reset(new Bot{-1});
 	}
 
 	virtual void TearDown() override {
@@ -34,6 +34,10 @@ protected:
 
 	std::unique_ptr<Bot> bot;
 };
+
+TEST_F(BotTest, HasAnId) {
+	EXPECT_EQ(-1, bot->id);
+}
 
 TEST_F(BotTest, CanReceiveAValue) {
 	Value value(100);
@@ -93,7 +97,7 @@ TEST_F(BotTest, CanTakeTwoValuesInReverseOrderUsingHigh) {
 }
 
 TEST_F(BotTest, CanGiveLowValueToAnotherBot) {
-	Bot otherBot;
+	Bot otherBot{-2};
 	Value lowValue(127);
 	Value highValue(9999);
 	bot->receive(lowValue);
@@ -103,7 +107,7 @@ TEST_F(BotTest, CanGiveLowValueToAnotherBot) {
 }
 
 TEST_F(BotTest, CanGiveHighValueToAnotherBot) {
-	Bot otherBot;
+	Bot otherBot{-3};
 	Value lowValue(127);
 	Value highValue(9999);
 	bot->receive(lowValue);

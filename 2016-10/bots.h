@@ -10,6 +10,12 @@ class Bot;
 
 class Bot {
 public:
+	const int id;
+
+	Bot(int id)
+		: id{id} {
+	}
+
 	void receive(Value value) {
 		if (values.empty() || (value < values.front())) {
 			values.push_front(value);
@@ -115,7 +121,12 @@ public:
 	}
 
 	Bot& bot(int id) {
-		return bots[id];
+		auto iter = bots.find(id);
+		if (bots.end() == iter) {
+			return (*bots.emplace(std::make_pair(id, Bot{id})).first).second;
+		} else {
+			return iter->second;
+		}
 	}
 
 private:
