@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <list>
+#include <map>
 
 using Value = std::uint64_t;
 
@@ -78,9 +79,9 @@ public:
 	}
 
 	Bot& bot(int id) {
-		return _bot;
+		return bots[id];
 	}
 
 private:
-	Bot _bot;
+	std::map<int, Bot> bots;
 };
