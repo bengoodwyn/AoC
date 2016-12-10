@@ -16,7 +16,7 @@ protected:
 	std::unique_ptr<Output> output;
 };
 
-TEST_F(ValueTest, Nothing) {
+TEST_F(OutputTest, Nothing) {
 }
 
 
@@ -51,7 +51,9 @@ protected:
 	std::unique_ptr<Value> value;
 };
 
-TEST_F(ValueTest, Nothing) {
+TEST_F(ValueTest, CanSetAndGetAValue) {
+	value->value = 100;
+	EXPECT_EQ(100, value->value);
 }
 
 class FactoryTest
@@ -68,5 +70,5 @@ protected:
 	std::unique_ptr<Factory> factory;
 };
 
-TEST_F(ValueTest, Nothing) {
+TEST_F(FactoryTest, Nothing) {
 }

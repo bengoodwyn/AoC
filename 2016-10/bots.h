@@ -3,7 +3,8 @@
 #include <iostream>
 
 class Value {
-
+public:
+	int value;
 };
 
 class Bot {
