@@ -62,9 +62,34 @@ public:
 		if (commandClass == "value") {
 			giveValueToBot(stream);
 		} else if (commandClass == "bot") {
-
+			botGivesValues(stream);
 		} else {
 			throw BadCommand();
+		}
+	}
+
+	void botGivesValues(std::istream& stream) {
+		std::string junk;
+		int sourceId;
+		std::string which;
+		int targetId;
+		Value value;
+
+		stream >> sourceId;
+		Bot& sourceBot = bot(sourceId);
+
+		for (int i = 0; i < 2; i++) {
+			stream >> junk; // gives OR and
+			stream >> which;
+			stream >> junk >> junk; // to bot
+			stream >> targetId;
+			Bot& targetBot = bot(targetId);
+
+			if ("low" == which) {
+				sourceBot.giveLowValueTo(targetBot);
+			} else {
+				sourceBot.giveHighValueTo(targetBot);
+			}
 		}
 	}
 

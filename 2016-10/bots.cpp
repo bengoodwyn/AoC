@@ -171,5 +171,9 @@ TEST_F(FactoryTest, CanGiveValuesToDifferentBotsAndGetThemBack) {
 }
 
 TEST_F(FactoryTest, CanTellABotWhatToDo) {
-	EXPECT_NO_THROW(factory->execute("bot 2 gives low to bot 1 and high to bot 0"));
+	factory->execute("value 100 goes to bot 1");
+	factory->execute("value 200 goes to bot 1");
+	factory->execute("bot 1 gives low to bot 2 and high to bot 3");
+	EXPECT_EQ(100, factory->bot(2).takeLowValue());
+	EXPECT_EQ(200, factory->bot(3).takeLowValue());
 }
