@@ -17,9 +17,13 @@ protected:
 	void run(std::string input_string, std::string expected_output) {
 		std::stringstream input(input_string);
 		std::stringstream output;
-		while (decompressor->run(input, output)) {
+		std::uint64_t totalLength{0};
+		std::uint64_t readLength;
+		while (0 != (readLength = decompressor->run(input, output))) {
+			totalLength += readLength;
 		}
 		EXPECT_EQ(expected_output, output.str());
+		EXPECT_EQ(expected_output.length(), totalLength);
 	}
 
 	std::unique_ptr<Decompressor> decompressor;
