@@ -3,8 +3,13 @@
 #include <sstream>
 
 class PixelGrid {
+private:
+	using Pixel = char;
+	using Grid = std::vector<Pixel>;
+
 public:
-	PixelGrid(int width, int height) {
+	PixelGrid(int width, int height)
+		: pixels(width * height), width(width) {
 	}
 
 	void runCommand(std::string line) {
@@ -17,18 +22,30 @@ public:
 	}
 
 	int litPixelCount() const {
-		return litPixels;
+		int count = 0;
+		for (auto pixel : pixels) {
+			count += pixel;
+		}
+		return count;
 	}
 
 private:
 	void rect(std::istream& stream) {
-		int width;
-		int height;
-		stream >> width;
+		std::pair<int, int> rect;
+		stream >> rect.first;
 		stream.get();
-		stream >> height;
-		litPixels += width * height;
+		stream >> rect.second;
+		for (int row = 0; row < rect.second; ++row) {
+			for (int col = 0; col < rect.first; ++col) {
+				at(row, col) = 1;
+			}
+		}
 	}
 
-	int litPixels{0};
+	Pixel& at(int row, int col) {
+		return pixels.at(row * width + col);
+	}
+
+	Grid pixels;
+	int width;
 };

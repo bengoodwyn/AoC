@@ -29,6 +29,13 @@ TEST_F(PixelTest, CanLightAllPixels) {
 		std::string("rect ") + std::to_string(TEST_WIDTH) + std::string("x") + std::to_string(TEST_HEIGHT));
 	EXPECT_EQ(TEST_WIDTH * TEST_HEIGHT, grid->litPixelCount());
 }
+
 TEST_F(PixelTest, NoPixelsLitByDefault) {
 	EXPECT_EQ(0, grid->litPixelCount());
+}
+
+TEST_F(PixelTest, OverwritingAPixelIsNotCountedAsLit) {
+	grid->runCommand("rect 1x1");
+	grid->runCommand("rect 1x1");
+	EXPECT_EQ(1, grid->litPixelCount());
 }
