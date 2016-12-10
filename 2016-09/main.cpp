@@ -5,14 +5,13 @@
 
 int main(int argc, const char* argv[]) {
 	std::ifstream input("input");
-	std::stringstream output;
-	int decompressedLength = 0;
+	std::ofstream output("/dev/null");
 	Decompressor decompressor;
-	while (decompressor.run(input, output)) {
-		decompressedLength += output.str().length();
-		output.str(std::string());
+	std::uint64_t decompressedLength = 0;
+	std::uint64_t thisLength;
+	while (0 != (thisLength = decompressor.run(input, output))) {
+		decompressedLength += thisLength;
 	}
-	decompressedLength += output.str().length();
 	std::cout << decompressedLength << std::endl;
 	return 0;
 }

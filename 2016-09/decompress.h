@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ctype.h>
 #include <iostream>
 
 class Decompressor {
@@ -15,12 +14,13 @@ public:
 		return output.str();
 	}
 
-	bool run(std::istream& input, std::ostream& output) {
+	std::uint64_t run(std::istream& input, std::ostream& output) {
 		input.peek();
 		if (input.eof()) {
-			return false;
+			return 0;
 		}
 
+		std::uint64_t length = 0;
 		if (atParen || ('(' == input.peek())) {
 			if (!atParen) {
 				input.get();
@@ -45,6 +45,7 @@ public:
 				output << characters;
 			}
 
+			length = charactersToRead * timesToRepeat;
 			atParen = false;
 		} else {
 			std::string raw;
@@ -55,10 +56,11 @@ public:
 				output << raw;
 			}
 
+			length = raw.length();
 			atParen = true;
 		}
 
-		return !input.eof();
+		return length;
 	}
 
 private:
