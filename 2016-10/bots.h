@@ -55,6 +55,13 @@ public:
 	};
 
 	void execute(std::string command) {
-		throw BadCommand();
+		std::stringstream stream(command);
+		std::string commandClass;
+		std::getline(stream, commandClass, ' ');
+		if (commandClass == "value") {
+
+		} else {
+			throw BadCommand();
+		}
 	}
 };

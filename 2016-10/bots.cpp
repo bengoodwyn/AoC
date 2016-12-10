@@ -155,3 +155,7 @@ protected:
 TEST_F(FactoryTest, RejectsABadCommand) {
 	EXPECT_THROW(factory->execute("bad command"), Factory::BadCommand);
 }
+
+TEST_F(FactoryTest, CanGiveValueToABot) {
+	EXPECT_NO_THROW(factory->execute("value 5 goes to bot 2"));
+}
