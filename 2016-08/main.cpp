@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include "pixel.h"
 
 int main(int argc, const char* argv[]) {
@@ -8,4 +9,6 @@ int main(int argc, const char* argv[]) {
 	while (std::getline(input, line)) {
 		grid.runCommand(line);
 	}
+	std::cout << grid.litPixelCount() << std::endl;
+	return 0;
 }
