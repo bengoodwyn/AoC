@@ -24,6 +24,11 @@ TEST_F(PixelTest, CreatingA1x1RectLights1Pixel) {
 	EXPECT_EQ(1, grid->litPixelCount());
 }
 
+TEST_F(PixelTest, CanLightAllPixels) {
+	grid->runCommand(
+		std::string("rect ") + std::to_string(TEST_WIDTH) + std::string("x") + std::to_string(TEST_HEIGHT));
+	EXPECT_EQ(TEST_WIDTH * TEST_HEIGHT, grid->litPixelCount());
+}
 TEST_F(PixelTest, NoPixelsLitByDefault) {
 	EXPECT_EQ(0, grid->litPixelCount());
 }
