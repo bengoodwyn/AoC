@@ -41,5 +41,5 @@ TEST_F(PixelTest, OverwritingAPixelIsNotCountedAsLit) {
 }
 
 TEST_F(PixelTest, ThrowsOnAnOddCommand) {
-	EXPECT_THROW(grid->runCommand("Stop, collaborate and listen"), PixelGrid::BadCommand);
+	EXPECT_THROW(grid->runCommand("Stop, collaborate and listen"), PixelGrid::UnknownCommand);
 }
