@@ -23,6 +23,11 @@ public:
 		return value;
 	}
 
+	void giveHighValueTo(Bot& otherBot) {
+		auto value = takeHighValue();
+		otherBot.receive(value);
+	}
+
 	Value takeLowValue() {
 		auto value = values.front();
 		values.pop_front();
