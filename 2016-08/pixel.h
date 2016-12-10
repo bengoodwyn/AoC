@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#include <vector>
 
 class PixelGrid {
 private:
@@ -67,6 +68,10 @@ private:
 		stream >> direction;
 		if (direction == "row") {
 			rotateRow(stream);
+		} else if (direction == "column") {
+			rotateColumn(stream);
+		} else {
+			throw MalformedCommand();
 		}
 	}
 
@@ -95,11 +100,45 @@ private:
 		rotateRow(row, distance);
 	}
 
+	void rotateColumn(std::istream& stream) {
+		char x;
+		stream >> x;
+		if (x != 'x') {
+			throw MalformedCommand();
+		}
+
+		char equals;
+		stream >> equals;
+		if (equals != '=') {
+			throw MalformedCommand();
+		}
+
+		int col;
+		stream >> col;
+
+		std::string by;
+		stream >> by;
+
+		int distance;
+		stream >> distance;
+
+		rotateColumn(col, distance);
+	}
+
 	void rotateRow(int row, int distance) {
 		// :TODO: This is a dumb, but easy implementation...
 		for (int i = 0; i < distance; ++i) {
 			for (int col = 0; col < (width - 1); ++col) {
 				std::swap(at(row, col), at(row, width - 1));
+			}
+		}
+	}
+
+	void rotateColumn(int col, int distance) {
+		// :TODO: This is a dumb, but easy implementation...
+		for (int i = 0; i < distance; ++i) {
+			for (int row = 0; row < (height - 1); ++row) {
+				std::swap(at(row, col), at(height - 1, col));
 			}
 		}
 	}

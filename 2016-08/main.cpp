@@ -10,5 +10,6 @@ int main(int argc, const char* argv[]) {
 		grid.runCommand(line);
 	}
 	std::cout << grid.litPixelCount() << std::endl;
+	grid.print();
 	return 0;
 }

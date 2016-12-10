@@ -52,9 +52,20 @@ TEST_F(PixelTest, ThrowsIfYNotFollowedByEqual) {
 	EXPECT_THROW(grid->runCommand("rotate row y_1 by 2"), PixelGrid::MalformedCommand);
 }
 
+TEST_F(PixelTest, ThrowsIfNotRotateRow) {
+	EXPECT_THROW(grid->runCommand("rotate col sdfsdf"), PixelGrid::MalformedCommand);
+}
+
 TEST_F(PixelTest, CanShiftToRightAndBackFill) {
 	grid->runCommand("rect 2x3");
-	grid->runCommand("rotate row y=0 by 2");
+	grid->runCommand("rotate row y=1 by 2");
 	grid->runCommand("rect 2x3");
 	EXPECT_EQ(8, grid->litPixelCount());
+}
+
+TEST_F(PixelTest, CanShiftDownAndBackFill) {
+	grid->runCommand("rect 2x3");
+	grid->runCommand("rotate column x=1 by 3");
+	grid->runCommand("rect 2x3");
+	EXPECT_EQ(9, grid->litPixelCount());
 }
