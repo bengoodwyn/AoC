@@ -39,20 +39,32 @@ public:
 			input.read(&characters.at(0), charactersToRead);
 			characters = stripSpace(characters);
 
-			std::cout << "COMMAND: " << command << " " << charactersToRead << " " << timesToRepeat << " '" << characters
-				<< "'" << std::endl;
-			for (int i = 0; i < timesToRepeat; ++i) {
-				output << characters;
+			if (std::string::npos == characters.find('(')) {
+				//std::cout << "COMMAND: " << command << " " << charactersToRead << " " << timesToRepeat << " '"
+				//	<< characters << "'" << std::endl;
+				for (int i = 0; i < timesToRepeat; ++i) {
+					output << characters;
+				}
+				length = charactersToRead * timesToRepeat;
+			} else {
+				std::stringstream child_input(characters);
+				for (int i = 0; i < timesToRepeat; ++i) {
+					std::unique_ptr<Decompressor> decompressor(new Decompressor);
+					std::uint64_t thisLength;
+					child_input.seekg(0, child_input.beg);
+					while (0 != (thisLength = decompressor->run(child_input, output))) {
+						length += thisLength;
+					}
+				}
 			}
 
-			length = charactersToRead * timesToRepeat;
 			atParen = false;
 		} else {
 			std::string raw;
 			std::getline(input, raw, '(');
 			raw = stripSpace(raw);
 			if (raw.length() > 0) {
-				std::cout << "RAW '" << stripSpace(raw) << "'" << std::endl;
+				//std::cout << "RAW '" << stripSpace(raw) << "'" << std::endl;
 				output << raw;
 			}
 

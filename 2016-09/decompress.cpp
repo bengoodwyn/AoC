@@ -52,3 +52,7 @@ TEST_F(DecompressTest, CanRepeatAStringTwice) {
 TEST_F(DecompressTest, CanRunTwoCommandsWithJunkInTheMiddle) {
 	run("(3x2)abc123(3x3)xyz", "abcabc123xyzxyzxyz");
 }
+
+TEST_F(DecompressTest, CanRunANestedCommand) {
+	run("(11x2)ab(2x2)xy12", "abxyxy12abxyxy12");
+}
