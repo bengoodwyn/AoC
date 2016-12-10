@@ -73,6 +73,24 @@ TEST_F(BotTest, CanTakeTwoValuesInReverseOrder) {
 	EXPECT_EQ(60, bot->takeLowValue());
 }
 
+TEST_F(BotTest, CanTakeTwoValuesUsingHigh) {
+	Value value1(50);
+	Value value2(60);
+	bot->receive(value1);
+	bot->receive(value2);
+	EXPECT_EQ(60, bot->takeHighValue());
+	EXPECT_EQ(50, bot->takeHighValue());
+}
+
+TEST_F(BotTest, CanTakeTwoValuesInReverseOrderUsingHigh) {
+	Value value1(60);
+	Value value2(50);
+	bot->receive(value1);
+	bot->receive(value2);
+	EXPECT_EQ(60, bot->takeHighValue());
+	EXPECT_EQ(50, bot->takeHighValue());
+}
+
 class ValueTest
 	: public ::testing::Test {
 protected:
