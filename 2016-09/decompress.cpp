@@ -26,3 +26,11 @@ TEST_F(DecompressTest, ProducesAnEmptyStreamFromAnEmptyStream) {
 	}
 	EXPECT_EQ(0, output.str().length());
 }
+
+TEST_F(DecompressTest, CopiesAnInputStreamToAnOutputStream) {
+	std::string input_string("simple");
+	input << input_string;
+	while (decompressor->run(input, output)) {
+	}
+	EXPECT_EQ(input_string, output.str());
+}
