@@ -34,7 +34,9 @@ protected:
 	std::unique_ptr<Bot> bot;
 };
 
-TEST_F(BotTest, Nothing) {
+TEST_F(BotTest, CanReceiveAValue) {
+	Value value(100);
+	bot->receive(value);
 }
 
 class ValueTest

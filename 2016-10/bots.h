@@ -4,10 +4,21 @@
 
 class Value {
 public:
+	Value()
+		: value{-1} {
+	}
+
+	Value(int value)
+		: value{value} {
+	}
+
 	int value;
 };
 
 class Bot {
+public:
+	void receive(Value value) {
+	}
 
 };
 
