@@ -51,7 +51,10 @@ public:
 
 class Factory {
 public:
-	void execute(std::string command) {
+	class BadCommand {
+	};
 
+	void execute(std::string command) {
+		throw BadCommand();
 	}
 };

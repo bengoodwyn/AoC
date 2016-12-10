@@ -152,6 +152,6 @@ protected:
 	std::unique_ptr<Factory> factory;
 };
 
-TEST_F(FactoryTest, CanExecuteAStringCommand) {
-	factory->execute("something");
+TEST_F(FactoryTest, RejectsABadCommand) {
+	EXPECT_THROW(factory->execute("bad command"), Factory::BadCommand);
 }
