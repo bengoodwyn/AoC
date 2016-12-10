@@ -159,3 +159,7 @@ TEST_F(FactoryTest, RejectsABadCommand) {
 TEST_F(FactoryTest, CanGiveValueToABot) {
 	EXPECT_NO_THROW(factory->execute("value 5 goes to bot 2"));
 }
+
+TEST_F(FactoryTest, CanTellABotWhatToDo) {
+	EXPECT_NO_THROW(factory->execute("bot 2 gives low to bot 1 and high to bot 0"));
+}

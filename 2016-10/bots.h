@@ -60,6 +60,8 @@ public:
 		std::getline(stream, commandClass, ' ');
 		if (commandClass == "value") {
 
+		} else if (commandClass == "bot") {
+
 		} else {
 			throw BadCommand();
 		}
