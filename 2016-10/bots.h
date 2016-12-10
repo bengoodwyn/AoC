@@ -44,7 +44,9 @@ private:
 };
 
 class Output {
-
+public:
+	void receive(Value value) {
+	}
 };
 
 class Factory {

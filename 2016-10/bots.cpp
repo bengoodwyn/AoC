@@ -16,9 +16,10 @@ protected:
 	std::unique_ptr<Output> output;
 };
 
-TEST_F(OutputTest, Nothing) {
+TEST_F(OutputTest, CanReceiveAValue) {
+	Value value(100);
+	output->receive(value);
 }
-
 
 class BotTest
 	: public ::testing::Test {
