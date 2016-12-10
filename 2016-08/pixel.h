@@ -8,6 +8,9 @@ private:
 	using Grid = std::vector<Pixel>;
 
 public:
+	class BadCommand {
+	};
+
 	PixelGrid(int width, int height)
 		: pixels(width * height), width(width) {
 	}
@@ -18,6 +21,8 @@ public:
 		stream >> command;
 		if (command == std::string("rect")) {
 			rect(stream);
+		} else {
+			throw BadCommand();
 		}
 	}
 

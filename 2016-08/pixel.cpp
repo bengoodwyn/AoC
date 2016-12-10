@@ -39,3 +39,7 @@ TEST_F(PixelTest, OverwritingAPixelIsNotCountedAsLit) {
 	grid->runCommand("rect 1x1");
 	EXPECT_EQ(1, grid->litPixelCount());
 }
+
+TEST_F(PixelTest, ThrowsOnAnOddCommand) {
+	EXPECT_THROW(grid->runCommand("Stop, collaborate and listen"), PixelGrid::BadCommand);
+}
