@@ -40,3 +40,7 @@ TEST_F(DecompressTest, IgnoresWhiteSpace) {
 TEST_F(DecompressTest, CanRepeatAStringOnce) {
 	run("(3x1)abc", "abc");
 }
+
+TEST_F(DecompressTest, CanRepeatAStringTwice) {
+	run("(3x2)abc", "abcabc");
+}
