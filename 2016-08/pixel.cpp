@@ -19,10 +19,11 @@ protected:
 	std::unique_ptr<PixelGrid> grid;
 };
 
-TEST_F(PixelTest, CanRunAStringCommand) {
+TEST_F(PixelTest, CreatingA1x1RectLights1Pixel) {
 	grid->runCommand("rect 1x1");
+	EXPECT_EQ(1, grid->litPixelCount());
 }
 
-TEST_F(PixelTest, CanReturnALitPixelCount) {
+TEST_F(PixelTest, NoPixelsLitByDefault) {
 	EXPECT_EQ(0, grid->litPixelCount());
 }

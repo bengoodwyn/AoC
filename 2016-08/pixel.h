@@ -6,9 +6,13 @@ public:
 	}
 
 	void runCommand(std::string command) {
+		++litPixels;
 	}
 
 	int litPixelCount() const {
-		return 0;
+		return litPixels;
 	}
+
+private:
+	int litPixels{0};
 };
