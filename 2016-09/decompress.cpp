@@ -36,3 +36,7 @@ TEST_F(DecompressTest, CopiesAnInputStreamToAnOutputStream) {
 TEST_F(DecompressTest, IgnoresWhiteSpace) {
 	run("simple simple", "simplesimple");
 }
+
+TEST_F(DecompressTest, CanRepeatAStringOnce) {
+	run("(3x1)abc", "abc");
+}
