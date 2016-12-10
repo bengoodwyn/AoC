@@ -9,7 +9,14 @@ using Value = std::uint64_t;
 
 class Bot;
 
-class Bot {
+class ValueReceiver {
+public:
+	virtual std::string receiverId() const = 0;
+	virtual void receive(Value value) = 0;
+};
+
+class Bot
+	: public ValueReceiver {
 public:
 	class Listener {
 	public:
@@ -22,7 +29,13 @@ public:
 		: id{id}, listener{listener} {
 	}
 
-	void receive(Value value) {
+	virtual std::string receiverId() const override {
+		std::string receiverId;
+		receiverId = "Bot:" + std::to_string(id);
+		return receiverId;
+	}
+
+	virtual void receive(Value value) override {
 		if (values.empty() || (value < values.front())) {
 			values.push_front(value);
 		} else {
@@ -40,9 +53,9 @@ public:
 		return value;
 	}
 
-	void giveHighValueTo(Bot& otherBot) {
+	void giveHighValueTo(ValueReceiver& other) {
 		auto value = takeHighValue();
-		otherBot.receive(value);
+		other.receive(value);
 	}
 
 	Value takeLowValue() {
@@ -52,9 +65,9 @@ public:
 		return value;
 	}
 
-	void giveLowValueTo(Bot& otherBot) {
+	void giveLowValueTo(ValueReceiver& other) {
 		auto value = takeLowValue();
-		otherBot.receive(value);
+		other.receive(value);
 	}
 
 	int valueCount() const {
@@ -75,9 +88,22 @@ private:
 	Listener& listener;
 };
 
-class Output {
+class Output
+	: public ValueReceiver {
 public:
-	void receive(Value value) {
+	const int id;
+
+	Output(int id = 0)
+		: id{id} {
+	}
+
+	virtual std::string receiverId() const override {
+		std::string receiverId;
+		receiverId = "Output:" + std::to_string(id);
+		return receiverId;
+	}
+
+	virtual void receive(Value value) override {
 		received = value;
 	}
 
@@ -85,6 +111,7 @@ public:
 		return received;
 	}
 
+private:
 	Value received;
 };
 
@@ -114,11 +141,11 @@ public:
 		int targetId;
 		Value value;
 		std::string destinationType;
-		int lowTarget;
-		int highTarget;
 
 		stream >> sourceId;
 
+		ValueReceiver* lowTarget = nullptr;
+		ValueReceiver* highTarget = nullptr;
 		for (int i = 0; i < 2; i++) {
 			stream >> junk; // "gives" OR "and"
 			stream >> which;
@@ -127,15 +154,15 @@ public:
 			stream >> targetId;
 			if ("bot" == destinationType) {
 				if ("low" == which) {
-					lowTarget = targetId;
+					lowTarget = &bot(targetId);
 				} else {
-					highTarget = targetId;
+					highTarget = &bot(targetId);
 				}
 			} else {
 				if ("low" == which) {
-					lowTarget = -targetId;
+					lowTarget = &output(targetId);
 				} else {
-					highTarget = -targetId;
+					highTarget = &output(targetId);
 				}
 			}
 		}
@@ -162,20 +189,8 @@ public:
 	virtual void OnBotFull(Bot& fullBot) override {
 		auto connection = connections.find(fullBot.id);
 		if (connections.end() != connection) {
-			int targetId = connection->second.first;
-			if (targetId > 0) {
-				fullBot.giveLowValueTo(bot(targetId));
-			} else {
-				Value value = fullBot.takeLowValue();
-				outputs[-targetId].receive(value);
-			}
-			targetId = connection->second.second;
-			if (targetId > 0) {
-				fullBot.giveHighValueTo(bot(targetId));
-			} else {
-				Value value = fullBot.takeHighValue();
-				outputs[-targetId].receive(value);
-			}
+			fullBot.giveLowValueTo(*connection->second.first);
+			fullBot.giveHighValueTo(*connection->second.second);
 		}
 	}
 
@@ -189,12 +204,21 @@ public:
 	}
 
 	Value reproduceOutput(int id) {
-		Output& bin = outputs[id];
+		Output& bin = output(id);
 		return bin.reproduce();
 	}
 
 private:
+	Output& output(int id) {
+		auto iter = outputs.find(id);
+		if (outputs.end() == iter) {
+			return (*outputs.emplace(std::make_pair(id, Output{id})).first).second;
+		} else {
+			return iter->second;
+		}
+	}
+
 	std::map<int, Bot> bots;
 	std::map<int, Output> outputs;
-	std::map<int, std::pair<int, int>> connections;
+	std::map<int, std::pair<ValueReceiver*, ValueReceiver*>> connections;
 };
