@@ -5,33 +5,62 @@
 
 class Decompressor {
 public:
-	static bool run(std::istream& input, std::ostream& output) {
-		int charactersToRead = 1;
-		int timesToRepeat = 1;
+	static std::string stripSpace(std::string source) {
+		std::stringstream input(source);
+		std::stringstream output;
+		std::string str;
+		while (input >> std::skipws >> str) {
+			output << str;
+		}
+		return output.str();
+	}
 
-		if ('(' == input.peek()) {
-			input.get();
+	bool run(std::istream& input, std::ostream& output) {
+		input.peek();
+		if (input.eof()) {
+			return false;
+		}
+
+		if (atParen || ('(' == input.peek())) {
+			if (!atParen) {
+				input.get();
+			}
 			std::string command;
 			std::getline(input, command, ')');
+
+			int charactersToRead;
+			int timesToRepeat;
 			std::stringstream command_stream(command);
 			command_stream >> charactersToRead;
 			command_stream.get();
 			command_stream >> timesToRepeat;
-		}
 
-		std::string characters;
-		for (int i = 0; !input.eof() && i < charactersToRead; ++i) {
-			char character = input.get();
-			while (isspace(character) && !input.eof()) {
-				character = input.get();
+			std::string characters(charactersToRead, '\0');
+			input.read(&characters.at(0), charactersToRead);
+			characters = stripSpace(characters);
+
+			std::cout << "COMMAND: " << command << " " << charactersToRead << " " << timesToRepeat << " '" << characters
+				<< "'" << std::endl;
+			for (int i = 0; i < timesToRepeat; ++i) {
+				output << characters;
 			}
-			characters += character;
-		}
 
-		for (int i = 0; i < timesToRepeat; ++i) {
-			output << characters;
+			atParen = false;
+		} else {
+			std::string raw;
+			std::getline(input, raw, '(');
+			raw = stripSpace(raw);
+			if (raw.length() > 0) {
+				std::cout << "RAW '" << stripSpace(raw) << "'" << std::endl;
+				output << raw;
+			}
+
+			atParen = true;
 		}
 
 		return !input.eof();
 	}
+
+private:
+	bool atParen{false};
 };

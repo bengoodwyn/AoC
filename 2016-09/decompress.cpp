@@ -34,7 +34,7 @@ TEST_F(DecompressTest, CopiesAnInputStreamToAnOutputStream) {
 }
 
 TEST_F(DecompressTest, IgnoresWhiteSpace) {
-	run("simple simple", "simplesimple");
+	run("simple simple\nsimple", "simplesimplesimple");
 }
 
 TEST_F(DecompressTest, CanRepeatAStringOnce) {
@@ -43,4 +43,8 @@ TEST_F(DecompressTest, CanRepeatAStringOnce) {
 
 TEST_F(DecompressTest, CanRepeatAStringTwice) {
 	run("(3x2)abc", "abcabc");
+}
+
+TEST_F(DecompressTest, CanRunTwoCommandsWithJunkInTheMiddle) {
+	run("(3x2)abc123(3x3)xyz", "abcabc123xyzxyzxyz");
 }
