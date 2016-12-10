@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <sstream>
 
 using Value = std::uint64_t;
 
@@ -25,6 +26,7 @@ public:
 	}
 
 	Value takeHighValue() {
+		logComparison();
 		auto value = values.back();
 		values.pop_back();
 		return value;
@@ -36,6 +38,7 @@ public:
 	}
 
 	Value takeLowValue() {
+		logComparison();
 		auto value = values.front();
 		values.pop_front();
 		return value;
@@ -47,6 +50,11 @@ public:
 	}
 
 private:
+	void logComparison() {
+		if (values.size() > 1) {
+			std::cout << "bot " << id << " is comparing " << values.front() << " to " << values.back() << std::endl;
+		}
+	}
 	std::list<Value> values;
 };
 
