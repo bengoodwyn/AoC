@@ -156,9 +156,11 @@ TEST_F(FactoryTest, RejectsABadCommand) {
 	EXPECT_THROW(factory->execute("bad command"), Factory::BadCommand);
 }
 
-TEST_F(FactoryTest, CanGiveValueToABot) {
+TEST_F(FactoryTest, CanGiveValuesToABotAndGetThemBack) {
 	factory->execute("value 5 goes to bot 2");
+	factory->execute("value 100 goes to bot 2");
 	EXPECT_EQ(5, factory->bot(2).takeLowValue());
+	EXPECT_EQ(100, factory->bot(2).takeLowValue());
 }
 
 TEST_F(FactoryTest, CanTellABotWhatToDo) {
