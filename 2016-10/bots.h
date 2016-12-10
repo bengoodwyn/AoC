@@ -74,6 +74,7 @@ public:
 		std::string which;
 		int targetId;
 		Value value;
+		std::string destinationType;
 
 		stream >> sourceId;
 		Bot& sourceBot = bot(sourceId);
@@ -81,14 +82,24 @@ public:
 		for (int i = 0; i < 2; i++) {
 			stream >> junk; // gives OR and
 			stream >> which;
-			stream >> junk >> junk; // to bot
+			stream >> junk;
+			stream >> destinationType;
 			stream >> targetId;
-			Bot& targetBot = bot(targetId);
+			if ("bot" == destinationType) {
+				Bot& targetBot = bot(targetId);
 
-			if ("low" == which) {
-				sourceBot.giveLowValueTo(targetBot);
+				if ("low" == which) {
+					sourceBot.giveLowValueTo(targetBot);
+				} else {
+					sourceBot.giveHighValueTo(targetBot);
+				}
 			} else {
-				sourceBot.giveHighValueTo(targetBot);
+				if ("low" == which) {
+					sourceBot.takeLowValue();
+				} else {
+					sourceBot.takeHighValue();
+				}
+
 			}
 		}
 	}

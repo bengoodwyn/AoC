@@ -177,3 +177,13 @@ TEST_F(FactoryTest, CanTellABotWhatToDo) {
 	EXPECT_EQ(100, factory->bot(2).takeLowValue());
 	EXPECT_EQ(200, factory->bot(3).takeLowValue());
 }
+
+TEST_F(FactoryTest, CanPutItemsInAnOutputBin) {
+	factory->execute("value 100 goes to bot 1");
+	factory->execute("value 200 goes to bot 1");
+	factory->execute("value 3000 goes to bot 2");
+	factory->execute("value 4000 goes to bot 3");
+	factory->execute("bot 1 gives low to output 2 and high to output 3");
+	EXPECT_EQ(3000, factory->bot(2).takeLowValue());
+	EXPECT_EQ(4000, factory->bot(3).takeLowValue());
+}
