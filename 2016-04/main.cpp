@@ -28,19 +28,19 @@ std::string calculateChecksum(std::list<std::string> components) {
 	}
 	std::map<int, std::set<char>, std::greater<int>> reverseCharFrequencies;
 	for (auto frequency : charFrequencies) {
-		std::cout << frequency.second << frequency.first << " ";
+		//std::cout << frequency.second << frequency.first << " ";
 		reverseCharFrequencies[frequency.second].insert(frequency.first);
 	}
-	std::cout << std::endl;
+	//std::cout << std::endl;
 	for (auto reverseFrequency : reverseCharFrequencies) {
 		for (auto character : reverseFrequency.second) {
-			std::cout << reverseFrequency.first << character;
+			//std::cout << reverseFrequency.first << character;
 			if (checksum.length() < 5) {
 				checksum += character;
 			}
 		}
 	}
-	std::cout << std::endl;
+	//std::cout << std::endl;
 	return checksum;
 }
 
@@ -55,29 +55,48 @@ std::string extractChecksum(std::string component) {
 	return component.substr(start, end - start);
 }
 
-int processRoomLine(std::string line) {
-	int result = 0;
-	std::cout << line << std::endl;
+std::string decryptRoom(std::list<std::string> components, int key) {
+	std::string room;
+	for (auto component : components) {
+		if (!room.empty()) {
+			room += ' ';
+		}
+		for (auto character : component) {
+			room += 'a' + (((character - 'a') + key) % 26);
+		}
+	}
+	return room;
+}
+
+std::pair<int, std::string> processRoomLine(std::string line) {
+	std::pair<int, std::string> result;
+	//std::cout << line << std::endl;
 	auto components = breakLineByDashes(line);
 	auto lastComponent = *components.rbegin();
 	auto testChecksum = extractChecksum(lastComponent);
 	components.pop_back();
 	auto calcChecksum = calculateChecksum(components);
 	if (testChecksum == calcChecksum) {
-		result = extractValue(lastComponent);
+		auto key = extractValue(lastComponent);
+		result = std::make_pair(key, decryptRoom(components, key));
 	} else {
-		std::cout << calcChecksum << " " << testChecksum << std::endl;
+		//std::cout << calcChecksum << " " << testChecksum << std::endl;
 	}
 	return result;
 }
 
-int main() {
+int main(int argc, const char* argv[]) {
 	std::ifstream input("input");
 	std::string line;
 	int result = 0;
 	while (std::getline(input, line)) {
-		result += processRoomLine(line);
+		auto result = processRoomLine(line);
+		if (result.first) {
+			if (argc > 1 && -1 != result.second.find(argv[1])) {
+				std::cout << "****** ";
+			}
+			std::cout << result.first << " " << result.second << std::endl;
+		}
 	}
-	std::cout << result << std::endl;
 	return 0;
 }
