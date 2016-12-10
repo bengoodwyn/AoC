@@ -39,12 +39,38 @@ TEST_F(BotTest, CanReceiveAValue) {
 	bot->receive(value);
 }
 
-TEST_F(BotTest, CanGetHighValue) {
+TEST_F(BotTest, CanTakeHighValue) {
 	Value value1(100);
 	Value value2(200);
 	bot->receive(value1);
 	bot->receive(value2);
-	EXPECT_EQ(200, bot->takeHighValue().value);
+	EXPECT_EQ(200, bot->takeHighValue());
+}
+
+TEST_F(BotTest, CanTakeLowValue) {
+	Value value1(100);
+	Value value2(200);
+	bot->receive(value1);
+	bot->receive(value2);
+	EXPECT_EQ(100, bot->takeLowValue());
+}
+
+TEST_F(BotTest, CanTakeTwoValues) {
+	Value value1(50);
+	Value value2(60);
+	bot->receive(value1);
+	bot->receive(value2);
+	EXPECT_EQ(50, bot->takeLowValue());
+	EXPECT_EQ(60, bot->takeLowValue());
+}
+
+TEST_F(BotTest, CanTakeTwoValuesInReverseOrder) {
+	Value value1(60);
+	Value value2(50);
+	bot->receive(value1);
+	bot->receive(value2);
+	EXPECT_EQ(50, bot->takeLowValue());
+	EXPECT_EQ(60, bot->takeLowValue());
 }
 
 class ValueTest
@@ -62,8 +88,15 @@ protected:
 };
 
 TEST_F(ValueTest, CanSetAndGetAValue) {
-	value->value = 100;
-	EXPECT_EQ(100, value->value);
+	*value = 100;
+	EXPECT_EQ(100, *value);
+}
+
+TEST_F(ValueTest, CanCompareTwoValues) {
+	Value bigValue(200);
+	Value smallValue(100);
+	EXPECT_TRUE(smallValue < bigValue);
+	EXPECT_FALSE(bigValue < smallValue);
 }
 
 class FactoryTest

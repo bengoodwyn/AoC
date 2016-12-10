@@ -1,29 +1,34 @@
 #pragma once
 
 #include <iostream>
+#include <list>
 
-class Value {
-public:
-	Value()
-		: value{-1} {
-	}
-
-	Value(int value)
-		: value{value} {
-	}
-
-	int value;
-};
+using Value = std::uint64_t;
 
 class Bot {
 public:
 	void receive(Value value) {
+		if (values.empty() || (value < values.front())) {
+			values.push_front(value);
+		} else {
+			values.push_back(value);
+		}
 	}
 
 	Value takeHighValue() {
-		return Value(200);
+		auto value = values.back();
+		values.pop_back();
+		return value;
 	}
 
+	Value takeLowValue() {
+		auto value = values.front();
+		values.pop_front();
+		return value;
+	}
+
+private:
+	std::list<Value> values;
 };
 
 class Output {
