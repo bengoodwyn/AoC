@@ -22,26 +22,50 @@ TEST_F(OutputTest, CanReceiveAValue) {
 }
 
 class BotTest
-	: public ::testing::Test {
+	: public ::testing::Test, public Bot::Listener {
 protected:
 	virtual void SetUp() override {
-		bot.reset(new Bot{-1});
+		bot.reset(new Bot{-1, *this});
 	}
 
 	virtual void TearDown() override {
 		bot.reset(nullptr);
+		onFullCalled = false;
+	}
+
+	virtual void OnBotFull(Bot& fullBot) override {
+		onFullCalled = true;
 	}
 
 	std::unique_ptr<Bot> bot;
+	bool onFullCalled{false};
 };
 
 TEST_F(BotTest, HasAnId) {
 	EXPECT_EQ(-1, bot->id);
 }
 
+TEST_F(BotTest, HasAValueCount) {
+	EXPECT_EQ(0, bot->valueCount());
+}
+
 TEST_F(BotTest, CanReceiveAValue) {
 	Value value(100);
 	bot->receive(value);
+}
+
+TEST_F(BotTest, doesntCallOnFullWithOneValue) {
+	Value value1(100);
+	bot->receive(value1);
+	EXPECT_FALSE(onFullCalled);
+}
+
+TEST_F(BotTest, CallsOnFullWithTwoValues) {
+	Value value1(100);
+	Value value2(200);
+	bot->receive(value1);
+	bot->receive(value2);
+	EXPECT_TRUE(onFullCalled);
 }
 
 TEST_F(BotTest, CanTakeHighValue) {
@@ -97,7 +121,7 @@ TEST_F(BotTest, CanTakeTwoValuesInReverseOrderUsingHigh) {
 }
 
 TEST_F(BotTest, CanGiveLowValueToAnotherBot) {
-	Bot otherBot{-2};
+	Bot otherBot{-2, *this};
 	Value lowValue(127);
 	Value highValue(9999);
 	bot->receive(lowValue);
@@ -107,7 +131,7 @@ TEST_F(BotTest, CanGiveLowValueToAnotherBot) {
 }
 
 TEST_F(BotTest, CanGiveHighValueToAnotherBot) {
-	Bot otherBot{-3};
+	Bot otherBot{-3, *this};
 	Value lowValue(127);
 	Value highValue(9999);
 	bot->receive(lowValue);
@@ -190,4 +214,12 @@ TEST_F(FactoryTest, CanPutItemsInAnOutputBin) {
 	factory->execute("bot 1 gives low to output 2 and high to output 3");
 	EXPECT_EQ(3000, factory->bot(2).takeLowValue());
 	EXPECT_EQ(4000, factory->bot(3).takeLowValue());
+}
+
+TEST_F(FactoryTest, CanTellABotWhatToDoBeforeYouGiveItAnyValues) {
+	factory->execute("bot 1 gives low to bot 2 and high to bot 3");
+	factory->execute("value 100 goes to bot 1");
+	factory->execute("value 200 goes to bot 1");
+	EXPECT_EQ(100, factory->bot(2).takeLowValue());
+	EXPECT_EQ(200, factory->bot(3).takeLowValue());
 }
