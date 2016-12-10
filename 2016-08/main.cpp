@@ -5,7 +5,7 @@
 int main(int argc, const char* argv[]) {
 	std::ifstream input("input");
 	std::string line;
-	PixelGrid grid;
+	PixelGrid grid(50, 6);
 	while (std::getline(input, line)) {
 		grid.runCommand(line);
 	}

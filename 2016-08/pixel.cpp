@@ -5,12 +5,15 @@
 class PixelTest
 	: public ::testing::Test {
 protected:
-	virtual void SetUp() override {
+	static constexpr int TEST_WIDTH = 50;
+	static constexpr int TEST_HEIGHT = 6;
 
+	virtual void SetUp() override {
+		grid.reset(new PixelGrid(50, 6));
 	}
 
 	virtual void TearDown() override {
-
+		grid.reset(nullptr);
 	}
 
 	std::unique_ptr<PixelGrid> grid;

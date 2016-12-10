@@ -2,6 +2,9 @@
 
 class PixelGrid {
 public:
+	PixelGrid(int width, int height) {
+	}
+
 	void runCommand(std::string command) {
 	}
 
