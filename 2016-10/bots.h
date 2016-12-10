@@ -59,11 +59,18 @@ public:
 		std::string commandClass;
 		std::getline(stream, commandClass, ' ');
 		if (commandClass == "value") {
-
+			_bot.receive(5);
 		} else if (commandClass == "bot") {
 
 		} else {
 			throw BadCommand();
 		}
 	}
+
+	Bot& bot(int id) {
+		return _bot;
+	}
+
+private:
+	Bot _bot;
 };

@@ -142,7 +142,7 @@ class FactoryTest
 	: public ::testing::Test {
 protected:
 	virtual void SetUp() override {
-		factory.reset(nullptr);
+		factory.reset(new Factory);
 	}
 
 	virtual void TearDown() override {
@@ -157,7 +157,8 @@ TEST_F(FactoryTest, RejectsABadCommand) {
 }
 
 TEST_F(FactoryTest, CanGiveValueToABot) {
-	EXPECT_NO_THROW(factory->execute("value 5 goes to bot 2"));
+	factory->execute("value 5 goes to bot 2");
+	EXPECT_EQ(5, factory->bot(2).takeLowValue());
 }
 
 TEST_F(FactoryTest, CanTellABotWhatToDo) {
