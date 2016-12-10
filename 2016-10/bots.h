@@ -20,6 +20,10 @@ public:
 	void receive(Value value) {
 	}
 
+	Value takeHighValue() {
+		return Value(200);
+	}
+
 };
 
 class Output {

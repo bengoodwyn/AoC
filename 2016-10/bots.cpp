@@ -39,6 +39,14 @@ TEST_F(BotTest, CanReceiveAValue) {
 	bot->receive(value);
 }
 
+TEST_F(BotTest, CanGetHighValue) {
+	Value value1(100);
+	Value value2(200);
+	bot->receive(value1);
+	bot->receive(value2);
+	EXPECT_EQ(200, bot->takeHighValue().value);
+}
+
 class ValueTest
 	: public ::testing::Test {
 protected:
