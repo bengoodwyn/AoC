@@ -50,5 +50,8 @@ public:
 };
 
 class Factory {
+public:
+	void execute(std::string command) {
 
+	}
 };

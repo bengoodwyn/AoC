@@ -152,5 +152,6 @@ protected:
 	std::unique_ptr<Factory> factory;
 };
 
-TEST_F(FactoryTest, Nothing) {
+TEST_F(FactoryTest, CanExecuteAStringCommand) {
+	factory->execute("something");
 }
