@@ -78,7 +78,14 @@ private:
 class Output {
 public:
 	void receive(Value value) {
+		received = value;
 	}
+
+	Value reproduce() {
+		return received;
+	}
+
+	Value received;
 };
 
 class Factory
@@ -126,9 +133,9 @@ public:
 				}
 			} else {
 				if ("low" == which) {
-					lowTarget = -1;
+					lowTarget = -targetId;
 				} else {
-					highTarget = -1;
+					highTarget = -targetId;
 				}
 			}
 		}
@@ -155,8 +162,20 @@ public:
 	virtual void OnBotFull(Bot& fullBot) override {
 		auto connection = connections.find(fullBot.id);
 		if (connections.end() != connection) {
-			fullBot.giveLowValueTo(bot(connection->second.first));
-			fullBot.giveHighValueTo(bot(connection->second.second));
+			int targetId = connection->second.first;
+			if (targetId > 0) {
+				fullBot.giveLowValueTo(bot(targetId));
+			} else {
+				Value value = fullBot.takeLowValue();
+				outputs[-targetId].receive(value);
+			}
+			targetId = connection->second.second;
+			if (targetId > 0) {
+				fullBot.giveHighValueTo(bot(targetId));
+			} else {
+				Value value = fullBot.takeHighValue();
+				outputs[-targetId].receive(value);
+			}
 		}
 	}
 
@@ -169,7 +188,13 @@ public:
 		}
 	}
 
+	Value reproduceOutput(int id) {
+		Output& bin = outputs[id];
+		return bin.reproduce();
+	}
+
 private:
 	std::map<int, Bot> bots;
+	std::map<int, Output> outputs;
 	std::map<int, std::pair<int, int>> connections;
 };

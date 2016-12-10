@@ -21,6 +21,12 @@ TEST_F(OutputTest, CanReceiveAValue) {
 	output->receive(value);
 }
 
+TEST_F(OutputTest, CanReproduceAReceivedValue) {
+	Value value(100);
+	output->receive(value);
+	EXPECT_EQ(100, output->reproduce());
+}
+
 class BotTest
 	: public ::testing::Test, public Bot::Listener {
 protected:
@@ -222,4 +228,14 @@ TEST_F(FactoryTest, CanTellABotWhatToDoBeforeYouGiveItAnyValues) {
 	factory->execute("value 200 goes to bot 1");
 	EXPECT_EQ(100, factory->bot(2).takeLowValue());
 	EXPECT_EQ(200, factory->bot(3).takeLowValue());
+}
+
+TEST_F(FactoryTest, CanReproduceItemsSentToOutputBins) {
+	factory->execute("value 100 goes to bot 1");
+	factory->execute("value 200 goes to bot 1");
+	factory->execute("value 3000 goes to bot 2");
+	factory->execute("value 4000 goes to bot 3");
+	factory->execute("bot 1 gives low to output 2 and high to output 3");
+	EXPECT_EQ(100, factory->reproduceOutput(2));
+	EXPECT_EQ(200, factory->reproduceOutput(3));
 }
