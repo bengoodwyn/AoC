@@ -134,7 +134,6 @@ public:
         int sourceId;
         std::string which;
         int targetId;
-        Value value;
         std::string destinationType;
 
         stream >> sourceId;

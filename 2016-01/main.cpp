@@ -1,99 +1,81 @@
+#include <cassert>
+#include <string>
+#include <sstream>
 #include <iostream>
 #include <fstream>
-#include <stdexcept>
-#include <string>
 #include <set>
-#include <tuple>
+#include "year2016day01.h"
 
-bool part2;
+using namespace AoC::Year2016Day01;
 
-std::string nextCommand(std::istream& input) {
-    std::string command;
-    if (std::getline(input, command, ',')) {
-        while (!command.empty() && std::isspace(command.at(0))) {
-            command.erase(0, 1);
-        }
-        while (!command.empty() && std::isspace(command.at(command.length() - 1))) {
-            command.erase(command.length() - 1);
+class CommandProcessor {
+public:
+    virtual bool processCommand(std::istream& input) {
+        char direction;
+        input >> std::skipws >> direction;
+        turn(direction);
+
+        int distance;
+        input >> distance;
+        return travel(distance);
+    }
+
+    int distanceFromOrigin() {
+        return traveler.distanceFromOrigin();
+    }
+
+protected:
+    virtual void turn(char direction) {
+        if ('R' == direction) {
+            std::cerr << "Turning Right" << std::endl;
+            traveler.turn(Turn::Right());
+        } else if ('L' == direction) {
+            std::cerr << "Turning Left" << std::endl;
+            traveler.turn(Turn::Left());
+        } else {
+            abort();
         }
     }
-    return command;
-}
 
-enum Direction {
-    NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3
+    virtual bool travel(int distance) {
+        std::cerr << "Traveling " << distance << std::endl;
+        traveler.travel(distance);
+        return true;
+    }
+
+    MapTraveler traveler;
 };
 
-int currentDirection = NORTH;
-int x = 0;
-int y = 0;
-std::set<std::pair<int, int>> spots;
-
-void turn(char direction) {
-    int delta;
-    switch (direction) {
-        case 'R':
-            delta = 1;
-            break;
-        case 'L':
-            delta = -1;
-            break;
-        default:
-            throw std::exception();
-    }
-    currentDirection += delta;
-    if (currentDirection < 0) {
-        currentDirection += 4;
-    }
-    if (currentDirection > 3) {
-        currentDirection -= 4;
-    }
-    std::cerr << direction << ": new direction: " << currentDirection << std::endl;
-}
-
-bool go(int distance) {
-    for (auto i = 0; i < distance; i++) {
-        switch (currentDirection) {
-            case NORTH:
-                y += 1;
-                break;
-            case EAST:
-                x += 1;
-                break;
-            case SOUTH:
-                y -= 1;
-                break;
-            case WEST:
-                x -= 1;
-                break;
-            default:
-                throw std::exception();
+class CommandProcessor2 : public CommandProcessor {
+protected:
+    virtual bool travel(int distance) override {
+        for (int i = 0; i < distance; ++i) {
+            CommandProcessor::travel(1);
+            if (visitedPositions.end() != visitedPositions.find(traveler.currentPosition())) {
+                return false;
+            } else {
+                visitedPositions.insert(traveler.currentPosition());
+            }
         }
-        std::cerr << i << "/" << distance << ": x=" << x << " y=" << y << std::endl;
-        auto location = std::pair<int, int>(x, y);
-        if (part2 && (spots.end() != spots.find(location))) {
-            return true;
-        }
-        spots.insert(location);
+        return true;
     }
-    return false;
-}
 
-bool processCommand(std::string command) {
-    turn(command.at(0));
-    return go(std::stoi(command.substr(1)));
-}
+    std::set<MapTraveler::Position> visitedPositions;
+};
 
 int main(int argc, const char* argv[]) {
-    part2 = (argc > 1 && argv[1][0] == '2');
+    bool part2 = (argc > 1 && argv[1][0] == '2');
+    std::unique_ptr<CommandProcessor> commandProcessor(part2 ? (new CommandProcessor2) : (new CommandProcessor));
     std::ifstream input("input");
     std::string command;
-    while (!(command = nextCommand(input)).empty()) {
-        if (processCommand(command)) {
-            std::cerr << "Repeat visit" << std::endl;
+    while (!input.eof()) {
+        if (!commandProcessor->processCommand(input)) {
             break;
         }
+        char comma;
+        input >> comma;
+        assert(comma == ',');
     }
-    std::cout << std::abs(x) + std::abs(y) << std::endl;
+    std::cout << commandProcessor->distanceFromOrigin() << std::endl;
     return 0;
 }

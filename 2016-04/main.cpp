@@ -88,7 +88,6 @@ std::pair<int, std::string> processRoomLine(std::string line) {
 int main(int argc, const char* argv[]) {
     std::ifstream input("input");
     std::string line;
-    int result = 0;
     while (std::getline(input, line)) {
         auto result = processRoomLine(line);
         if (result.first) {
