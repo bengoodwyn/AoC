@@ -5,6 +5,8 @@
 #include <set>
 #include <tuple>
 
+bool part2;
+
 std::string nextCommand(std::istream& input) {
     std::string command;
     if (std::getline(input, command, ',')) {
@@ -46,7 +48,7 @@ void turn(char direction) {
     if (currentDirection > 3) {
         currentDirection -= 4;
     }
-    std::cout << direction << ": new direction: " << currentDirection << std::endl;
+    std::cerr << direction << ": new direction: " << currentDirection << std::endl;
 }
 
 bool go(int distance) {
@@ -67,9 +69,9 @@ bool go(int distance) {
             default:
                 throw std::exception();
         }
-        std::cout << i << "/" << distance << ": x=" << x << " y=" << y << std::endl;
+        std::cerr << i << "/" << distance << ": x=" << x << " y=" << y << std::endl;
         auto location = std::pair<int, int>(x, y);
-        if (spots.end() != spots.find(location)) {
+        if (part2 && (spots.end() != spots.find(location))) {
             return true;
         }
         spots.insert(location);
@@ -82,15 +84,16 @@ bool processCommand(std::string command) {
     return go(std::stoi(command.substr(1)));
 }
 
-int main() {
+int main(int argc, const char* argv[]) {
+    part2 = (argc > 1 && argv[1][0] == '2');
     std::ifstream input("input");
     std::string command;
     while (!(command = nextCommand(input)).empty()) {
         if (processCommand(command)) {
-            std::cout << "Repeat visit" << std::endl;
+            std::cerr << "Repeat visit" << std::endl;
             break;
         }
     }
-    std::cout << "Distance: " << std::abs(x) + std::abs(y) << std::endl;
+    std::cout << std::abs(x) + std::abs(y) << std::endl;
     return 0;
 }
