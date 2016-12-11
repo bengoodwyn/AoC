@@ -4,63 +4,74 @@
 #include <iostream>
 #include <fstream>
 #include <set>
-#include "year2016day01.h"
+#include "Traveler.h"
 
-using namespace AoC::Year2016Day01;
+using namespace AoC;
 
 class CommandProcessor {
 public:
-    virtual bool processCommand(std::istream& input) {
+    virtual void processCommand(std::istream& input) {
         char direction;
         input >> std::skipws >> direction;
         turn(direction);
 
         int distance;
         input >> distance;
-        return travel(distance);
+        travel(distance);
     }
 
-    int distanceFromOrigin() {
+    virtual int distanceFromOrigin() {
         return traveler.distanceFromOrigin();
     }
 
 protected:
     virtual void turn(char direction) {
         if ('R' == direction) {
-            std::cerr << "Turning Right" << std::endl;
-            traveler.turn(Turn::Right());
+            traveler.turn(Turn::Right);
         } else if ('L' == direction) {
-            std::cerr << "Turning Left" << std::endl;
-            traveler.turn(Turn::Left());
+            traveler.turn(Turn::Left);
         } else {
             abort();
         }
     }
 
-    virtual bool travel(int distance) {
-        std::cerr << "Traveling " << distance << std::endl;
+    virtual void travel(int distance) {
         traveler.travel(distance);
-        return true;
     }
 
-    MapTraveler traveler;
+    Traveler traveler;
 };
 
-class CommandProcessor2 : public CommandProcessor {
-protected:
-    virtual bool travel(int distance) override {
-        for (int i = 0; i < distance; ++i) {
-            CommandProcessor::travel(1);
-            if (visitedPositions.end() != visitedPositions.find(traveler.currentPosition())) {
-                return false;
-            } else {
-                visitedPositions.insert(traveler.currentPosition());
-            }
-        }
-        return true;
+class CommandProcessor2 : public CommandProcessor, public Traveler::Follower {
+public:
+    CommandProcessor2() {
+        traveler.addFollower(*this);
     }
 
-    std::set<MapTraveler::Position> visitedPositions;
+    virtual void onTravelerMoved(Traveler& traveler) override {
+        auto currentPosition = traveler.currentPosition();
+        if (visitedPositions.find(currentPosition) != visitedPositions.end()) {
+            if (distance < 0) {
+                distance = traveler.distanceFromOrigin();
+            }
+        } else {
+            visitedPositions.insert(currentPosition);
+        }
+    }
+
+    virtual int distanceFromOrigin() override {
+        return distance;
+    }
+
+protected:
+    virtual void travel(int distance) override {
+        for (auto i = 0; i < distance; ++i) {
+            CommandProcessor::travel(1);
+        }
+    }
+
+    int distance{-1};
+    std::set<Traveler::Position> visitedPositions;
 };
 
 int main(int argc, const char* argv[]) {
@@ -69,9 +80,7 @@ int main(int argc, const char* argv[]) {
     std::ifstream input("input");
     std::string command;
     while (!input.eof()) {
-        if (!commandProcessor->processCommand(input)) {
-            break;
-        }
+        commandProcessor->processCommand(input);
         char comma;
         input >> comma;
         assert(comma == ',');

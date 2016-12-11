@@ -1,94 +1,112 @@
+#include <list>
 #include <memory>
 #include <gtest/gtest.h>
+#include "Traveler.h"
 
-#include "year2016day01.h"
+using namespace AoC;
 
-using namespace AoC::Year2016Day01;
-
-class MapTest : public ::testing::Test {
+class TravelerTest : public ::testing::Test, public Traveler::Follower {
 public:
     virtual void SetUp() override {
-        mapTraveler.reset(new MapTraveler);
+        traveler.reset(new Traveler);
+        traveler->addFollower(*this);
     }
 
     virtual void TearDown() override {
-        mapTraveler.reset(nullptr);
+        traveler.reset(nullptr);
+        positions.clear();
     }
 
-    std::unique_ptr<MapTraveler> mapTraveler;
+    virtual void onTravelerMoved(Traveler& traveler) override {
+        positions.push_back(traveler.currentPosition());
+    }
+
+    std::unique_ptr<Traveler> traveler;
+    std::list<Traveler::Position> positions;
 };
 
-TEST_F(MapTest, CanGetDefaultPosition) {
-    auto position = mapTraveler->currentPosition();
+TEST_F(TravelerTest, CanGetDefaultPosition) {
+    auto position = traveler->currentPosition();
     EXPECT_EQ(0, position.first);
     EXPECT_EQ(0, position.second);
 }
 
-TEST_F(MapTest, CanGetDefaultDirection) {
-    EXPECT_EQ(Facing::North(), mapTraveler->currentFacing());
+TEST_F(TravelerTest, CanGetDefaultDirection) {
+    EXPECT_EQ(Facing::North, traveler->currentFacing());
 }
 
-TEST_F(MapTest, CanTurnToTheRight) {
-    mapTraveler->turn(Turn::Right());
-    EXPECT_EQ(Facing::East(), mapTraveler->currentFacing());
+TEST_F(TravelerTest, CanTurnToTheRight) {
+    traveler->turn(Turn::Right);
+    EXPECT_EQ(Facing::East, traveler->currentFacing());
 }
 
-TEST_F(MapTest, CanTurnToTheLeft) {
-    mapTraveler->turn(Turn::Left());
-    EXPECT_EQ(Facing::West(), mapTraveler->currentFacing());
+TEST_F(TravelerTest, CanTurnToTheLeft) {
+    traveler->turn(Turn::Left);
+    EXPECT_EQ(Facing::West, traveler->currentFacing());
 }
 
-TEST_F(MapTest, CanTravelNorth) {
-    mapTraveler->travel(17);
-    auto position = mapTraveler->currentPosition();
+TEST_F(TravelerTest, CanTravelNorth) {
+    traveler->travel(17);
+    auto position = traveler->currentPosition();
     EXPECT_EQ(0, position.first);
     EXPECT_EQ(17, position.second);
 }
 
-TEST_F(MapTest, CanTravelEast) {
-    mapTraveler->turn(Turn::Right());
-    mapTraveler->travel(19);
-    auto position = mapTraveler->currentPosition();
+TEST_F(TravelerTest, CanTravelEast) {
+    traveler->turn(Turn::Right);
+    traveler->travel(19);
+    auto position = traveler->currentPosition();
     EXPECT_EQ(19, position.first);
     EXPECT_EQ(0, position.second);
 }
 
-TEST_F(MapTest, CanTravelWest) {
-    mapTraveler->turn(Turn::Left());
-    mapTraveler->travel(13);
-    auto position = mapTraveler->currentPosition();
+TEST_F(TravelerTest, CanTravelWest) {
+    traveler->turn(Turn::Left);
+    traveler->travel(13);
+    auto position = traveler->currentPosition();
     EXPECT_EQ(-13, position.first);
     EXPECT_EQ(0, position.second);
 }
 
-TEST_F(MapTest, CanTravelSouth) {
-    mapTraveler->turn(Turn::Left());
-    mapTraveler->turn(Turn::Left());
-    mapTraveler->travel(7);
-    auto position = mapTraveler->currentPosition();
+TEST_F(TravelerTest, CanTravelSouth) {
+    traveler->turn(Turn::Left);
+    traveler->turn(Turn::Left);
+    traveler->travel(7);
+    auto position = traveler->currentPosition();
     EXPECT_EQ(0, position.first);
     EXPECT_EQ(-7, position.second);
 }
 
-TEST_F(MapTest, CanTravelSouthThenWest) {
-    mapTraveler->turn(Turn::Left());
-    mapTraveler->turn(Turn::Left());
-    mapTraveler->travel(7);
-    mapTraveler->turn(Turn::Right());
-    mapTraveler->travel(11);
-    auto position = mapTraveler->currentPosition();
+TEST_F(TravelerTest, CanTravelSouthThenWest) {
+    traveler->turn(Turn::Left);
+    traveler->turn(Turn::Left);
+    traveler->travel(7);
+    traveler->turn(Turn::Right);
+    traveler->travel(11);
+    auto position = traveler->currentPosition();
     EXPECT_EQ(-11, position.first);
     EXPECT_EQ(-7, position.second);
 }
 
-TEST_F(MapTest, CanGetShortestPathDistanceFromOrigin) {
-    mapTraveler->turn(Turn::Left());
-    mapTraveler->turn(Turn::Left());
-    mapTraveler->travel(7);
-    mapTraveler->turn(Turn::Right());
-    mapTraveler->travel(11);
-    mapTraveler->turn(Turn::Right());
-    mapTraveler->travel(3);
-    auto distance = mapTraveler->distanceFromOrigin();
+TEST_F(TravelerTest, CanGetShortestPathDistanceFromOrigin) {
+    traveler->turn(Turn::Left);
+    traveler->turn(Turn::Left);
+    traveler->travel(7);
+    traveler->turn(Turn::Right);
+    traveler->travel(11);
+    traveler->turn(Turn::Right);
+    traveler->travel(3);
+    auto distance = traveler->distanceFromOrigin();
     EXPECT_EQ(15, distance);
+}
+
+TEST_F(TravelerTest, ReportsPositionChangesToTheFollower) {
+    traveler->travel(1);
+    EXPECT_EQ(1, positions.size());
+    EXPECT_EQ(positions.front(), traveler->currentPosition());
+    traveler->turn(Turn::Right);
+    traveler->travel(1);
+    EXPECT_EQ(2, positions.size());
+    EXPECT_EQ(positions.back(), traveler->currentPosition());
+    EXPECT_NE(positions.front(), positions.back());
 }
