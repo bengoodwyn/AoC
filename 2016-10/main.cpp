@@ -1,20 +1,15 @@
 #include <fstream>
 #include "MicrochipFactory.h"
 
-Bot::Comparator part1Comparator = [](int id, Value smaller, Value larger) -> bool {
+Bot::Comparator part1Comparator = [](int id, Value a, Value b) -> bool {
     constexpr Value interestingSmaller{17};
     constexpr Value interestingLarger{61};
-    if (smaller < larger) {
-        if (smaller == interestingSmaller && larger == interestingLarger) {
-            std::cout << id << std::endl;
-        }
-        return true;
-    } else {
-        if (larger == interestingSmaller && smaller == interestingLarger) {
-            std::cout << id << std::endl;
-        }
-        return false;
+    Value smaller = std::min(a, b);
+    Value larger = std::max(a, b);
+    if (smaller == interestingSmaller && larger == interestingLarger) {
+        std::cout << id << std::endl;
     }
+    return Bot::DefaultComparator(id, a, b);
 };
 
 int main(int argc, const char* argv[]) {
