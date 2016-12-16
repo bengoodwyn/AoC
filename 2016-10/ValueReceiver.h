@@ -1,6 +1,6 @@
 #pragma once
 
-using Value = std::uint64_t;
+#include "Value.h"
 
 class ValueReceiver {
 public:
