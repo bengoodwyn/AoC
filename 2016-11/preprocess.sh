@@ -13,4 +13,6 @@ cat input | \
 	sed 's/floor //g' | \
 	sed 's/-compatible//g' | \
 	sed 's/contains //g' | \
-	sed 's/  *$//g' > preprocessed-input
+	sed 's/  *$//g' | \
+	awk 'BEGIN {print "1"} {vals=(NF-1)/2; print $1 " " vals " "; for (i = 2; i <= NF; i++) print $i " "  }' \
+	> preprocessed-input

@@ -17,7 +17,11 @@ namespace AoC {
         const std::string element;
 
         std::string description() const {
-            return element + ":" + itemClass();
+            return element + " " + itemClass();
+        }
+
+        void serialize(std::ostream& stream) const {
+            stream << description();
         }
     };
 
@@ -41,6 +45,20 @@ namespace AoC {
         }
     };
 
+    static std::shared_ptr<Item> createItem(std::istream& stream) {
+        std::string element;
+        std::string type;
+        stream >> element >> type;
+        if (std::string{"generator"} == type) {
+            return std::make_shared<GeneratorItem>(element);
+        } else if (std::string{"microchip"} == type) {
+            return std::make_shared<MicrochipItem>(element);
+        } else {
+            assert(false);
+        }
+        return nullptr;
+    }
+
     class Container;
 
     class Container {
@@ -51,17 +69,53 @@ namespace AoC {
             }
         }
 
-        void addItem(std::unique_ptr<Item> item) {
-            items.emplace_back(std::move(item));
+        void addItem(std::shared_ptr<Item> item) {
+            items.push_back(item);
+            std::sort(items.begin(), items.end(), [](std::shared_ptr<Item> pa, std::shared_ptr<Item> pb) -> bool {
+                Item& a = *pa;
+                Item& b = *pb;
+                if (a.element < b.element) {
+                    return true;
+                }
+                if (a.element > b.element) {
+                    return false;
+                }
+                if (a.itemClass() == std::string{"microchip"}) {
+                    return true;
+                }
+                return false;
+            });
         }
 
         bool validateContents() const {
-            return true;
+            // For each unprotected microchip, is there a generator to fry it?
+            bool anyUnprotectedMicrochips = false;
+            bool anyGenerators = false;
+            for (auto iter = items.begin(); items.end() != iter; ++iter) {
+                auto item = *iter;
+                if (item->itemClass() == "generator") {
+                    anyGenerators = true;
+                } else if (item->itemClass() == "microchip") {
+                    auto iter_next = iter + 1;
+                    if (iter_next == items.end()) {
+                        anyUnprotectedMicrochips = true;
+                    } else {
+                        auto item_next = *iter_next;
+                        if (item->element != item_next->element) {
+                            anyUnprotectedMicrochips = true;
+                        }
+                    }
+                } else {
+                    assert(false);
+                }
+            }
+            return !anyUnprotectedMicrochips || !anyGenerators;
         }
 
-        std::unique_ptr<Item> removeItem(int index) {
-            std::unique_ptr<Item> removedItem;
-            removedItem = std::move(items[index]);
+        std::shared_ptr<Item> removeItem(int index) {
+            assert(index < items.size());
+            std::shared_ptr<Item> removedItem;
+            removedItem = items[index];
             items.erase(items.begin() + index);
             return removedItem;
         }
@@ -74,90 +128,135 @@ namespace AoC {
             return *(items[index]);
         }
 
-    private:
-        std::vector<std::unique_ptr<Item>> items;
-    };
-
-    class Elevator {
-    public:
-        static constexpr int capacity() {
-            return 2;
-        }
-
-        class OverCapacity {
-        };
-
-        class Empty {
-        };
-
-        int currentFloor() const {
-            return floor;
-        }
-
-        void up() {
-            if (items.count() > 2) {
-                throw OverCapacity();
+        void serialize(std::ostream& stream) const {
+            stream << items.size();
+            for (const auto& item : items) {
+                stream << " ";
+                item->serialize(stream);
             }
-            if (0 == items.count()) {
-                throw Empty();
+            stream << std::endl;
+        }
+
+        void serialize(std::istream& stream) {
+            int count;
+            stream >> count;
+            for (int i = 0; i < count; ++i) {
+                addItem(createItem(stream));
             }
-            assert(floor < floorCount);
-            ++floor;
         }
-
-        void down() {
-            if (items.count() > 2) {
-                throw OverCapacity();
-            }
-            if (0 == items.count()) {
-                throw Empty();
-            }
-            assert(floor > 1);
-            --floor;
-        }
-
-        int floors() const {
-            return floorCount;
-        }
-
-        void setFloors(int floors) {
-            floorCount = floors;
-            assert(floor <= floorCount);
-        }
-
-        Container items;
 
     private:
-        int floor{1};
-        int floorCount{0};
+        std::vector<std::shared_ptr<Item>> items;
     };
 
     class Facility {
     public:
-        void addFloor(std::string floor) {
-            std::cerr << floor << std::endl;
-            std::stringstream stream(floor);
-            int floorNumber;
-            stream >> floorNumber;
-            assert(floorNumber > 0);
-            if (floorNumber > _elevator.floors()) {
-                _elevator.setFloors(floorNumber);
-                _floors.resize(floorNumber);
+        std::string serialize() const {
+            std::stringstream stream;
+            serialize(static_cast<std::ostream&>(stream));
+            return stream.str();
+        }
+
+        void serialize(std::ostream& stream) const {
+            stream << _elevatorFloor << std::endl;
+            for (int floor = 1; floor <= _floors.size(); ++floor) {
+                stream << floor << " ";
+                _floors[floor - 1].serialize(stream);
             }
         }
 
-        int floors() const {
-            assert(_floors.size() == _elevator.floors());
-            return _elevator.floors();
+        void serialize(std::istream& stream) {
+            stream >> std::skipws >> _elevatorFloor;
+            while (!stream.eof()) {
+                int floorNumber;
+                stream >> floorNumber;
+                assert(floorNumber > 0);
+                if (floorNumber > _floors.size()) {
+                    _floors.resize(floorNumber);
+                    _floors[floorNumber - 1].serialize(stream);
+                }
+            }
         }
 
-        Elevator& elevator() {
-            return _elevator;
+        bool isLegal() const {
+            if (!_elevator.validateContents()) {
+                return false;
+            }
+            for (const auto& floor : _floors) {
+                if (!floor.validateContents()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        bool isEndingMove() const {
+            for (int i = 1; i < _floors.size(); ++i) {
+                if (0 != _floors[i - 1].count()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        std::vector<Facility> moves() const {
+            std::vector<Facility> moves;
+
+            assert(0 == _elevator.count());
+
+            for (int i = 0; i < _floors[_elevatorFloor - 1].count(); ++i) {
+                Facility oneItemLoaded{*this};
+                oneItemLoaded._elevator.addItem(oneItemLoaded._floors[_elevatorFloor - 1].removeItem(i));
+                if (oneItemLoaded.isLegal()) {
+                    if (_elevatorFloor > 1) {
+                        Facility downOneFloor(oneItemLoaded);
+                        --downOneFloor._elevatorFloor;
+                        downOneFloor._floors[downOneFloor._elevatorFloor - 1].takeItemsFrom(downOneFloor._elevator);
+                        if (downOneFloor.isLegal()) {
+                            moves.push_back(downOneFloor);
+                        }
+                    }
+                    if (_elevatorFloor < _floors.size()) {
+                        Facility upOneFloor(oneItemLoaded);
+                        ++upOneFloor._elevatorFloor;
+                        upOneFloor._floors[upOneFloor._elevatorFloor - 1].takeItemsFrom(upOneFloor._elevator);
+                        if (upOneFloor.isLegal()) {
+                            moves.push_back(upOneFloor);
+                        }
+                    }
+                }
+                for (int j = 0; j < oneItemLoaded._floors[_elevatorFloor - 1].count(); j++) {
+                    Facility twoItemsLoaded{oneItemLoaded};
+                    twoItemsLoaded._elevator.addItem(twoItemsLoaded._floors[_elevatorFloor - 1].removeItem(j));
+                    if (twoItemsLoaded.isLegal()) {
+                        if (_elevatorFloor > 1) {
+                            Facility downOneFloor(twoItemsLoaded);
+                            --downOneFloor._elevatorFloor;
+                            downOneFloor._floors[downOneFloor._elevatorFloor - 1].takeItemsFrom(downOneFloor._elevator);
+                            if (downOneFloor.isLegal()) {
+                                moves.push_back(downOneFloor);
+                            }
+                        }
+                        if (_elevatorFloor < _floors.size()) {
+                            Facility upOneFloor(twoItemsLoaded);
+                            ++upOneFloor._elevatorFloor;
+                            upOneFloor._floors[upOneFloor._elevatorFloor - 1].takeItemsFrom(upOneFloor._elevator);
+                            if (upOneFloor.isLegal()) {
+                                moves.push_back(upOneFloor);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return moves;
         }
 
     private:
         using Floors = std::vector<Container>;
-        Elevator _elevator;
+
+        int _elevatorFloor{-1};
         Floors _floors;
+        Container _elevator;
     };
 }
