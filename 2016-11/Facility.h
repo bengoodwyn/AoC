@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -45,14 +44,14 @@ namespace AoC {
         }
     };
 
-    static std::shared_ptr<Item> createItem(std::istream& stream) {
+    static Item* createItem(std::istream& stream) {
         std::string element;
         std::string type;
         stream >> element >> type;
         if (std::string{"generator"} == type) {
-            return std::make_shared<GeneratorItem>(element);
+            return new GeneratorItem{element};
         } else if (std::string{"microchip"} == type) {
-            return std::make_shared<MicrochipItem>(element);
+            return new MicrochipItem{element};
         } else {
             assert(false);
         }
@@ -69,9 +68,9 @@ namespace AoC {
             }
         }
 
-        void addItem(std::shared_ptr<Item> item) {
+        void addItem(Item* item) {
             items.push_back(item);
-            std::sort(items.begin(), items.end(), [](std::shared_ptr<Item> pa, std::shared_ptr<Item> pb) -> bool {
+            std::sort(items.begin(), items.end(), [](Item* pa, Item* pb) -> bool {
                 Item& a = *pa;
                 Item& b = *pb;
                 if (a.element < b.element) {
@@ -112,9 +111,9 @@ namespace AoC {
             return !anyUnprotectedMicrochips || !anyGenerators;
         }
 
-        std::shared_ptr<Item> removeItem(int index) {
+        Item* removeItem(int index) {
             assert(index < items.size());
-            std::shared_ptr<Item> removedItem;
+            Item* removedItem;
             removedItem = items[index];
             items.erase(items.begin() + index);
             return removedItem;
@@ -146,7 +145,7 @@ namespace AoC {
         }
 
     private:
-        std::vector<std::shared_ptr<Item>> items;
+        std::vector<Item*> items;
     };
 
     class Facility {
@@ -176,6 +175,12 @@ namespace AoC {
                     _floors[floorNumber - 1].serialize(stream);
                 }
             }
+        }
+
+        void addItem(int floor, Item* item) {
+            assert(floor > 0);
+            assert(floor <= _floors.size());
+            _floors[floor - 1].addItem(item);
         }
 
         bool isLegal() const {
@@ -229,14 +234,14 @@ namespace AoC {
                     Facility twoItemsLoaded{oneItemLoaded};
                     twoItemsLoaded._elevator.addItem(twoItemsLoaded._floors[_elevatorFloor - 1].removeItem(j));
                     if (twoItemsLoaded.isLegal()) {
-                        if (_elevatorFloor > 1) {
-                            Facility downOneFloor(twoItemsLoaded);
-                            --downOneFloor._elevatorFloor;
-                            downOneFloor._floors[downOneFloor._elevatorFloor - 1].takeItemsFrom(downOneFloor._elevator);
-                            if (downOneFloor.isLegal()) {
-                                moves.push_back(downOneFloor);
-                            }
-                        }
+                        //                        if (_elevatorFloor > 1) {
+                        //                            Facility downOneFloor(twoItemsLoaded);
+                        //                            --downOneFloor._elevatorFloor;
+                        //                            downOneFloor._floors[downOneFloor._elevatorFloor - 1].takeItemsFrom(downOneFloor._elevator);
+                        //                            if (downOneFloor.isLegal()) {
+                        //                                moves.push_back(downOneFloor);
+                        //                            }
+                        //                        }
                         if (_elevatorFloor < _floors.size()) {
                             Facility upOneFloor(twoItemsLoaded);
                             ++upOneFloor._elevatorFloor;
