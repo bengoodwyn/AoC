@@ -8,13 +8,19 @@ namespace AoC {
         }
 
         void load(std::stringstream& stream) {
+            std::string instruction;
+            while (!stream.eof()) {
+                std::getline(stream, instruction);
+                instructions.push_back(instruction);
+            }
         }
 
         void execute() {
-            a = 1;
+            a = instructions.size();
         }
 
     private:
+        std::vector<std::string> instructions;
         int a{0};
     };
 }
