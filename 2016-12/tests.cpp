@@ -33,3 +33,10 @@ TEST_F(VmTest, CanIncrementAToMakeIt1) {
     vm->execute();
     ASSERT_EQ(1, vm->read('a'));
 }
+
+TEST_F(VmTest, CanIncrementATwiceToMakeIt2) {
+    std::stringstream stream("inc a\ninc a");
+    vm->load(stream);
+    vm->execute();
+    ASSERT_EQ(2, vm->read('a'));
+}
