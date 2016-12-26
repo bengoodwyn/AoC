@@ -17,5 +17,6 @@ public:
     std::unique_ptr<Vm> vm;
 };
 
-TEST_F(VmTest, Noop) {
+TEST_F(VmTest, CanGetValueOfRegisterA) {
+    ASSERT_EQ(vm->read('a'), 0);
 }
