@@ -26,3 +26,10 @@ TEST_F(VmTest, CanLoadInstructionsFromAStream) {
     std::stringstream stream;
     ASSERT_NO_THROW(vm->load(stream));
 }
+
+TEST_F(VmTest, CanIncrementAToMakeIt1) {
+    std::stringstream stream("inc a");
+    vm->load(stream);
+    vm->execute();
+    ASSERT_EQ(1, vm->read('a'));
+}
