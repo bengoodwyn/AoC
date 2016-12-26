@@ -1,4 +1,5 @@
 #include <memory>
+#include <sstream>
 #include <gtest/gtest.h>
 #include "Vm.h"
 
@@ -19,4 +20,9 @@ public:
 
 TEST_F(VmTest, CanGetValueOfRegisterA) {
     ASSERT_EQ(vm->read('a'), 0);
+}
+
+TEST_F(VmTest, CanLoadInstructionsFromAStream) {
+    std::stringstream stream;
+    ASSERT_NO_THROW(vm->load(stream));
 }
