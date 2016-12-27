@@ -16,6 +16,13 @@ namespace AoC {
                 return ip + 1;
             };
 
+            microcode["dec"] = [this](std::istream& stream, int ip) -> int {
+                std::string arg;
+                stream >> arg;
+                --registers[arg[0]];
+                return ip + 1;
+            };
+
             microcode["cpy"] = [this](std::istream& stream, int ip) -> int {
                 std::string arg_src;
                 std::string arg_tgt;
