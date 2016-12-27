@@ -1,10 +1,38 @@
 #pragma once
 
+#include <array>
+#include <cctype>
+#include <unordered_map>
+#include <functional>
+
 namespace AoC {
     class Vm {
     public:
+        Vm() {
+            microcode["inc"] = [this](std::istream& stream, int ip) -> int {
+                std::string arg;
+                stream >> arg;
+                ++registers[arg[0]];
+                return ip + 1;
+            };
+
+            microcode["cpy"] = [this](std::istream& stream, int ip) -> int {
+                std::string arg_src;
+                std::string arg_tgt;
+                stream >> arg_src >> arg_tgt;
+                int value;
+                if (std::isalpha(arg_src.at(0))) {
+                    value = read(arg_src.at(0));
+                } else {
+                    value = std::stoi(arg_src);
+                }
+                registers[arg_tgt.at(0)] = value;
+                return ip + 1;
+            };
+        }
+
         int read(char reg) {
-            return a;
+            return registers[reg];
         }
 
         void load(std::stringstream& stream) {
@@ -16,11 +44,24 @@ namespace AoC {
         }
 
         void execute() {
-            a = instructions.size();
+            int ip = 0;
+            while (ip < instructions.size()) {
+                ip = execute(ip);
+            }
         }
 
     private:
+        int execute(int ip) {
+            std::cerr << ip << " " << instructions[ip] << std::endl;
+            std::stringstream instruction(instructions[ip]);
+            std::string opcode;
+            instruction >> opcode;
+            auto function = microcode.at(opcode);
+            return function(instruction, ip);
+        }
+
         std::vector<std::string> instructions;
-        int a{0};
+        std::array<int, 256> registers{{0}};
+        std::unordered_map<std::string, std::function<int(std::istream&, int)>> microcode;
     };
 }

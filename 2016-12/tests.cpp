@@ -40,3 +40,17 @@ TEST_F(VmTest, CanIncrementATwiceToMakeIt2) {
     vm->execute();
     ASSERT_EQ(2, vm->read('a'));
 }
+
+TEST_F(VmTest, CanIncrementBTwiceThenCopyToA) {
+    std::stringstream stream("inc b\ninc b\ncpy b a");
+    vm->load(stream);
+    vm->execute();
+    ASSERT_EQ(2, vm->read('a'));
+}
+
+TEST_F(VmTest, CanCopyImmediateValueToA) {
+    std::stringstream stream("cpy 99 a");
+    vm->load(stream);
+    vm->execute();
+    ASSERT_EQ(99, vm->read('a'));
+}
