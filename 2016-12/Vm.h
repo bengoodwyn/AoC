@@ -28,7 +28,13 @@ namespace AoC {
             microcode["jnz"] = [this](std::istream& stream, int ip) -> int {
                 std::string arg_cmp;
                 stream >> arg_cmp;
-                if (0 != read(arg_cmp.at(0))) {
+                int value;
+                if (std::isalpha(arg_cmp.at(0))) {
+                    value = read(arg_cmp.at(0));
+                } else {
+                    value = std::stoi(arg_cmp);
+                }
+                if (0 != value) {
                     std::string arg_distance;
                     stream >> arg_distance;
                     return ip + std::stoi(arg_distance);
@@ -73,14 +79,21 @@ namespace AoC {
 
     private:
         int execute(int ip) {
-            std::cerr << ip << " " << instructions[ip] << std::endl;
+            printRegisters("before");
+            std::cerr << "\t" << ip << " " << instructions[ip] << std::endl;
             std::stringstream instruction(instructions[ip]);
             std::string opcode;
             instruction >> opcode;
             auto function = microcode.at(opcode);
-            return function(instruction, ip);
+            auto newip = function(instruction, ip);
+            printRegisters("after");
+            return newip;
         }
 
+        void printRegisters(std::string prefix) {
+            std::cerr << prefix << ": " << registers['a'] << " " << registers['b'] << " " << registers['c'] << " "
+                << registers['d'] << std::endl;
+        }
         std::vector<std::string> instructions;
         std::array<int, 256> registers{{0}};
         std::unordered_map<std::string, std::function<int(std::istream&, int)>> microcode;
