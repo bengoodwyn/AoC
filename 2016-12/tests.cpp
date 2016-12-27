@@ -68,3 +68,10 @@ TEST_F(VmTest, CanSkipJnzWhenZero) {
     vm->execute();
     ASSERT_EQ(1, vm->read('a'));
 }
+
+TEST_F(VmTest, CanJumpWhenNotZero) {
+    std::stringstream stream("inc a\njnz a 2\ninc a\ninc a");
+    vm->load(stream);
+    vm->execute();
+    ASSERT_EQ(2, vm->read('a'));
+}
