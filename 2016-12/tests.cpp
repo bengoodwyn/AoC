@@ -62,3 +62,13 @@ TEST_F(VmTest, CanJumpWhenNotZero) {
     run("inc a\njnz a 2\ninc a\ninc a");
     ASSERT_EQ(2, vm->read('a'));
 }
+
+TEST_F(VmTest, CanRunTheSampleTest) {
+    run("cpy 41 a\n"
+        "inc a\n"
+        "inc a\n"
+        "dec a\n"
+        "jnz a 2\n"
+        "dec a");
+    ASSERT_EQ(42, vm->read('a'));
+}
