@@ -41,6 +41,13 @@ TEST_F(VmTest, CanIncrementATwiceToMakeIt2) {
     ASSERT_EQ(2, vm->read('a'));
 }
 
+TEST_F(VmTest, CanDecrementATwiceToMakeItNegative2) {
+    std::stringstream stream("dec a\ndec a");
+    vm->load(stream);
+    vm->execute();
+    ASSERT_EQ(-2, vm->read('a'));
+}
+
 TEST_F(VmTest, CanIncrementBTwiceThenCopyToA) {
     std::stringstream stream("inc b\ninc b\ncpy b a");
     vm->load(stream);
