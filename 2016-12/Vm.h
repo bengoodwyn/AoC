@@ -66,7 +66,9 @@ namespace AoC {
             std::string instruction;
             while (!stream.eof()) {
                 std::getline(stream, instruction);
-                instructions.push_back(instruction);
+                if (instruction.length() > 0) {
+                    instructions.push_back(instruction);
+                }
             }
         }
 
@@ -79,14 +81,14 @@ namespace AoC {
 
     private:
         int execute(int ip) {
-            printRegisters("before");
-            std::cerr << "\t" << ip << " " << instructions[ip] << std::endl;
+            //printRegisters("before");
+            //std::cerr << "\t" << ip << " " << instructions[ip] << std::endl;
             std::stringstream instruction(instructions[ip]);
             std::string opcode;
             instruction >> opcode;
             auto function = microcode.at(opcode);
             auto newip = function(instruction, ip);
-            printRegisters("after");
+            //printRegisters("after");
             return newip;
         }
 
