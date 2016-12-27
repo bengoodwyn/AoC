@@ -24,7 +24,15 @@ namespace AoC {
             };
 
             microcode["jnz"] = [this](std::istream& stream, int ip) -> int {
-                return ip + 1;
+                std::string arg_cmp;
+                stream >> arg_cmp;
+                if (0 != read(arg_cmp.at(0))) {
+                    std::string arg_distance;
+                    stream >> arg_distance;
+                    return ip + std::stoi(arg_distance);
+                } else {
+                    return ip + 1;
+                }
             };
 
             microcode["cpy"] = [this](std::istream& stream, int ip) -> int {
