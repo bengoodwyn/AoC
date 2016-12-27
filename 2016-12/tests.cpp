@@ -15,6 +15,12 @@ public:
         vm.reset();
     }
 
+    void run(std::string instructions) {
+        std::stringstream stream(instructions);
+        vm->load(stream);
+        vm->execute();
+    }
+
     std::unique_ptr<Vm> vm;
 };
 
@@ -22,56 +28,37 @@ TEST_F(VmTest, CanGetValueOfRegisterA) {
     ASSERT_EQ(vm->read('a'), 0);
 }
 
-TEST_F(VmTest, CanLoadInstructionsFromAStream) {
-    std::stringstream stream;
-    ASSERT_NO_THROW(vm->load(stream));
-}
-
 TEST_F(VmTest, CanIncrementAToMakeIt1) {
-    std::stringstream stream("inc a");
-    vm->load(stream);
-    vm->execute();
+    run("inc a");
     ASSERT_EQ(1, vm->read('a'));
 }
 
 TEST_F(VmTest, CanIncrementATwiceToMakeIt2) {
-    std::stringstream stream("inc a\ninc a");
-    vm->load(stream);
-    vm->execute();
+    run("inc a\ninc a");
     ASSERT_EQ(2, vm->read('a'));
 }
 
 TEST_F(VmTest, CanDecrementATwiceToMakeItNegative2) {
-    std::stringstream stream("dec a\ndec a");
-    vm->load(stream);
-    vm->execute();
+    run("dec a\ndec a");
     ASSERT_EQ(-2, vm->read('a'));
 }
 
 TEST_F(VmTest, CanIncrementBTwiceThenCopyToA) {
-    std::stringstream stream("inc b\ninc b\ncpy b a");
-    vm->load(stream);
-    vm->execute();
+    run("inc b\ninc b\ncpy b a");
     ASSERT_EQ(2, vm->read('a'));
 }
 
 TEST_F(VmTest, CanCopyImmediateValueToA) {
-    std::stringstream stream("cpy 99 a");
-    vm->load(stream);
-    vm->execute();
+    run("cpy 99 a");
     ASSERT_EQ(99, vm->read('a'));
 }
 
 TEST_F(VmTest, CanSkipJnzWhenZero) {
-    std::stringstream stream("jnz a 999\ninc a");
-    vm->load(stream);
-    vm->execute();
+    run("jnz a 999\ninc a");
     ASSERT_EQ(1, vm->read('a'));
 }
 
 TEST_F(VmTest, CanJumpWhenNotZero) {
-    std::stringstream stream("inc a\njnz a 2\ninc a\ninc a");
-    vm->load(stream);
-    vm->execute();
+    run("inc a\njnz a 2\ninc a\ninc a");
     ASSERT_EQ(2, vm->read('a'));
 }
