@@ -4,6 +4,8 @@
 #include <cctype>
 #include <unordered_map>
 #include <functional>
+#include <sstream>
+#include <vector>
 
 namespace AoC {
     class Vm {
@@ -54,7 +56,7 @@ namespace AoC {
             return registers[reg];
         }
 
-        void load(std::stringstream& stream) {
+        void load(std::istream& stream) {
             std::string instruction;
             while (!stream.eof()) {
                 std::getline(stream, instruction);
