@@ -61,3 +61,10 @@ TEST_F(VmTest, CanCopyImmediateValueToA) {
     vm->execute();
     ASSERT_EQ(99, vm->read('a'));
 }
+
+TEST_F(VmTest, CanSkipJnzWhenZero) {
+    std::stringstream stream("jnz a 999\ninc a");
+    vm->load(stream);
+    vm->execute();
+    ASSERT_EQ(1, vm->read('a'));
+}
