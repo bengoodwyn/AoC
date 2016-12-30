@@ -12,6 +12,10 @@ namespace AoC {
         bool isWall(Point point) const {
             return false;
         }
+
+        int distanceTo(Point point) const {
+            return 0;
+        }
     };
 }
 
@@ -32,4 +36,8 @@ public:
 
 TEST_F(MazeTest, OriginIsNotAWall) {
     ASSERT_FALSE(maze->isWall({0, 0}));
+}
+
+TEST_F(MazeTest, CanGetMinimumMovesToOrigin) {
+    ASSERT_EQ(0, maze->distanceTo({0, 0}));
 }
