@@ -4,8 +4,7 @@
 using namespace AoC;
 
 int main(int argc, const char* argv[]) {
-    //bool part2 = (argc > 1 && argv[1][0] == '2');
-    const Maze::Point destination{31, 39};
+    bool part2 = (argc > 1 && argv[1][0] == '2');
     const int input = 1362;
     auto isWall = [input](Maze::Point point) -> bool {
         auto& x = point.first;
@@ -16,6 +15,11 @@ int main(int argc, const char* argv[]) {
         return (0x1 == (bits & 0x1));
     };
     Maze maze{isWall};
-    std::cout << maze.distanceTo(destination) << std::endl;
+    if (!part2) {
+        const Maze::Point destination{31, 39};
+        std::cout << maze.distanceTo(destination) << std::endl;
+    } else {
+        std::cout << maze.reachablePoints(50) << std::endl;
+    }
     return 0;
 }

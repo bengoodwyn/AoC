@@ -40,6 +40,21 @@ namespace AoC {
             }
         }
 
+        int reachablePoints(int distance) {
+            int sum = 0;
+            for (int i = 0; i <= distance; ++i) {
+                auto& reachablePoints = reachablePointsByDistance[i];
+
+                if (reachablePoints.empty()) {
+                    std::cerr << "Exploring distance " << i << std::endl;
+                    explore(i);
+                }
+
+                sum += reachablePoints.size();
+            }
+            return sum;
+        }
+
     private:
         void explore(int distance) {
             for (auto point : reachablePointsByDistance[distance - 1]) {
