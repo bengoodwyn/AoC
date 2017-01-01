@@ -18,6 +18,10 @@ namespace AoC {
             return false;
         }
 
+        void explore(int distance) {
+
+        }
+
         int distanceTo(Point point) const {
             return point.first + point.second;
         }
@@ -56,4 +60,8 @@ TEST_F(MazeTest, CanGetMinimumMovesToOrigin) {
 
 TEST_F(MazeTest, DistanceToNeighborOfOriginIs1) {
     ASSERT_EQ(1, maze->distanceTo({1, 0}));
+}
+
+TEST_F(MazeTest, CanExploreGivenDistanceFromOrigin) {
+    ASSERT_NO_THROW(maze->explore(1));
 }
