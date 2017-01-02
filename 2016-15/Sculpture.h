@@ -9,11 +9,15 @@ namespace AoC {
             int size, initial;
             while (!stream.eof()) {
                 stream >> size >> initial;
-                discs.push_back({size, initial});
+                addDisc(size, initial);
                 while (!stream.eof() && std::isspace(stream.peek())) {
                     stream.get();
                 }
             }
+        }
+
+        void addDisc(int size, int initial) {
+            discs.push_back({size, initial});
         }
 
         int execute() {
