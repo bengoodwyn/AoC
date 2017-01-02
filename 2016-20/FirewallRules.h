@@ -18,10 +18,9 @@ namespace AoC {
         uint64_t lowestUnblockedAddress() {
             uint64_t address = 0;
             for (auto rule : rules) {
+                std::cerr << rule.first << "-" << rule.second << std::endl;
                 if (address >= rule.first && address <= rule.second) {
                     address = std::max(rule.second + 1, address);
-                } else {
-                    return address;
                 }
             }
             return address;
