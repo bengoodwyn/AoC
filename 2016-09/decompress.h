@@ -1,21 +1,14 @@
 #pragma once
 
+#include <cctype>
 #include <iostream>
 
 class Decompressor {
 public:
-    static std::string stripSpace(std::string source) {
-        std::stringstream input(source);
-        std::stringstream output;
-        std::string str;
-        while (input >> std::skipws >> str) {
-            output << str;
+    std::uint64_t run(std::istream& input, bool recursive = false) {
+        while (std::isspace(input.peek())) {
+            input.get();
         }
-        return output.str();
-    }
-
-    std::uint64_t run(std::istream& input, std::ostream& output) {
-        input.peek();
         if (input.eof()) {
             return 0;
         }
@@ -37,37 +30,26 @@ public:
 
             std::string characters(charactersToRead, '\0');
             input.read(&characters.at(0), charactersToRead);
-            characters = stripSpace(characters);
 
-            if (std::string::npos == characters.find('(')) {
+            if (!recursive || std::string::npos == characters.find('(')) {
                 //std::cout << "COMMAND: " << command << " " << charactersToRead << " " << timesToRepeat << " '"
                 //	<< characters << "'" << std::endl;
-                for (int i = 0; i < timesToRepeat; ++i) {
-                    output << characters;
-                }
                 length = charactersToRead * timesToRepeat;
             } else {
                 std::stringstream child_input(characters);
-                for (int i = 0; i < timesToRepeat; ++i) {
-                    std::unique_ptr<Decompressor> decompressor(new Decompressor);
-                    std::uint64_t thisLength;
-                    child_input.seekg(0, child_input.beg);
-                    while (0 != (thisLength = decompressor->run(child_input, output))) {
-                        length += thisLength;
-                    }
+                Decompressor decompressor;
+                std::uint64_t childLength = 0;
+                std::uint64_t thisLength;
+                while (0 != (thisLength = decompressor.run(child_input, recursive))) {
+                    childLength += thisLength;
                 }
+                length += childLength * timesToRepeat;
             }
 
             atParen = false;
         } else {
             std::string raw;
             std::getline(input, raw, '(');
-            raw = stripSpace(raw);
-            if (raw.length() > 0) {
-                //std::cout << "RAW '" << stripSpace(raw) << "'" << std::endl;
-                output << raw;
-            }
-
             length = raw.length();
             atParen = true;
         }
