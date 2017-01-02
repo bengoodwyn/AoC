@@ -41,6 +41,11 @@ public:
         return '\0';
     }
 
+    bool findQuintuple(std::string input, char character) {
+        std::string needle(5, character);
+        return std::string::npos != input.find(needle);
+    }
+
 private:
     std::string salt;
 };
@@ -72,4 +77,12 @@ TEST_F(KeyGeneratorTests, CanFindATripleInAString) {
 
 TEST_F(KeyGeneratorTests, DoesntFindTripleInStringsWithoutTriples) {
     ASSERT_EQ('\0', keyGenerator->findTriple("fooxbarxxforbarx"));
+}
+
+TEST_F(KeyGeneratorTests, CanFindAQuintupleOfAGivenCharacter) {
+    ASSERT_TRUE(keyGenerator->findQuintuple("fooxxxxxbar", 'x'));
+}
+
+TEST_F(KeyGeneratorTests, CanNotFindAQuintupleOfAGivenCharacter) {
+    ASSERT_FALSE(keyGenerator->findQuintuple("fooxxxxxbar", 'y'));
 }
