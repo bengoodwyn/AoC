@@ -8,6 +8,10 @@ public:
     KeyGenerator(std::string salt) : salt(salt) {
     }
 
+    std::string saltInteger(int integer) {
+        return salt + std::to_string(integer);
+    }
+
 private:
     std::string salt;
 };
@@ -25,6 +29,6 @@ public:
     std::unique_ptr<KeyGenerator> keyGenerator;
 };
 
-TEST_F(KeyGeneratorTests, Template) {
-    ASSERT_TRUE(true);
+TEST_F(KeyGeneratorTests, CanCombineSaltWithIntegerIndex) {
+    ASSERT_EQ("abc123", keyGenerator->saltInteger(123));
 }
