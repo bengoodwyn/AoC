@@ -1,4 +1,3 @@
-#include <cassert>
 #include <array>
 #include <cstdio>
 #include <string>
@@ -18,12 +17,18 @@ namespace AoC {
         const char* digest(std::string input) {
             static unsigned char digest[16];
             static std::array<char, (sizeof(digest) * 2) + 1> strDigest;
-            assert(0 == keyStretching);
             MD5(reinterpret_cast<const unsigned char*>(input.data()), input.length(), digest);
             snprintf(&strDigest.at(0), strDigest.size(),
                 "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", digest[0], digest[1], digest[2],
                 digest[3], digest[4], digest[5], digest[6], digest[7], digest[8], digest[9], digest[10], digest[11],
                 digest[12], digest[13], digest[14], digest[15]);
+            for (int i = 0; i < keyStretching; ++i) {
+                MD5(reinterpret_cast<const unsigned char*>(&strDigest.at(0)), strDigest.size() - 1, digest);
+                snprintf(&strDigest.at(0), strDigest.size(),
+                    "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", digest[0], digest[1], digest[2],
+                    digest[3], digest[4], digest[5], digest[6], digest[7], digest[8], digest[9], digest[10], digest[11],
+                    digest[12], digest[13], digest[14], digest[15]);
+            }
             return &strDigest.at(0);
         }
 

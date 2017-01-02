@@ -44,3 +44,8 @@ TEST_F(KeyGeneratorTests, CanNotFindAQuintupleOfAGivenCharacter) {
 TEST_F(KeyGeneratorTests, CanGetIndexOfNthKey) {
     ASSERT_EQ(22728, keyGenerator->indexOfKey(64));
 }
+
+TEST_F(KeyGeneratorTests, CanGetAStretchedDigest) {
+    KeyGenerator keyGenerator("abc", 2016);
+    ASSERT_EQ(std::string("a107ff634856bb300138cac6568c0f24"), keyGenerator.digest("abc0"));
+}
