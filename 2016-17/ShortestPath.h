@@ -22,8 +22,8 @@ namespace AoC {
             const Coordinates startingPosition{0, 0};
             std::vector<Position> exploredPositions;
             exploredPositions.push_back({startingPosition, passcode});
-            while (true) {
-                assert(exploredPositions.size() > 0);
+            std::string longestPath;
+            while (exploredPositions.size() > 0) {
                 std::vector<Position> possiblePositions;
                 for (auto position : exploredPositions) {
                     auto newlyExploredPositions = explore(position);
@@ -31,13 +31,20 @@ namespace AoC {
                         //std::cerr << newlyExploredPosition.first.first << "," << newlyExploredPosition.first.second
                         //    << " " << newlyExploredPosition.second << std::endl;
                         if (newlyExploredPosition.first == desiredPosition) {
-                            return newlyExploredPosition.second.substr(passcode.length());
+                            if (type == PathType::Shortest) {
+                                return newlyExploredPosition.second.substr(passcode.length());
+                            } else if (longestPath.length() < newlyExploredPosition.second.length()) {
+                                longestPath = newlyExploredPosition.second;
+                            }
+                        } else {
+                            possiblePositions.push_back(newlyExploredPosition);
                         }
-                        possiblePositions.push_back(newlyExploredPosition);
                     }
                 }
                 exploredPositions = possiblePositions;
             }
+            assert(PathType::Longest == type);
+            return longestPath.substr(passcode.length());
         }
 
         static const char* digest(std::string input) {
