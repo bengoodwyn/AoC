@@ -14,6 +14,10 @@ TEST(TilerTest, OutOfRangeIndexIsNotATrap) {
     ASSERT_FALSE(Tiler::isTrap("foo", 3));
 }
 
+TEST(TilerTest, CanCountSafeTiles) {
+    ASSERT_EQ(3, Tiler::countSafeTiles(".^.^."));
+}
+
 TEST(TilerTest, CaretIsATrap) {
     std::string row(".^.^.");
     ASSERT_FALSE(Tiler::isTrap(row, 0));

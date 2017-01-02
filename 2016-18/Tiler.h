@@ -33,6 +33,16 @@ namespace AoC {
             }
             return '^' == row.at(index);
         }
+
+        static int countSafeTiles(std::string row) {
+            int count = 0;
+            for (int i = 0; i < row.length(); i++) {
+                if (!isTrap(row, i)) {
+                    ++count;
+                }
+            }
+            return count;
+        }
     };
 }
 
