@@ -25,6 +25,22 @@ public:
         return &strDigest.at(0);
     }
 
+    char findTriple(std::string input) {
+        int repeatCount = 0;
+        char repeatChar = '\0';
+        for (auto current : input) {
+            if (current == repeatChar) {
+                if (3 == ++repeatCount) {
+                    return repeatChar;
+                }
+            } else {
+                repeatChar = current;
+                repeatCount = 1;
+            }
+        }
+        return '\0';
+    }
+
 private:
     std::string salt;
 };
@@ -48,4 +64,8 @@ TEST_F(KeyGeneratorTests, CanCombineSaltWithIntegerIndex) {
 
 TEST_F(KeyGeneratorTests, CanGetDigestOfAString) {
     ASSERT_EQ("0034e0923cc38887a57bd7b1d4f953df", std::string(keyGenerator->digest("abc18")));
+}
+
+TEST_F(KeyGeneratorTests, CanFindATripleInAString) {
+    ASSERT_EQ('x', keyGenerator->findTriple("fooxxxbar"));
 }
