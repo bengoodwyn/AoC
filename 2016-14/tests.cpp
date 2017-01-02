@@ -69,3 +69,7 @@ TEST_F(KeyGeneratorTests, CanGetDigestOfAString) {
 TEST_F(KeyGeneratorTests, CanFindATripleInAString) {
     ASSERT_EQ('x', keyGenerator->findTriple("fooxxxbar"));
 }
+
+TEST_F(KeyGeneratorTests, DoesntFindTripleInStringsWithoutTriples) {
+    ASSERT_EQ('\0', keyGenerator->findTriple("fooxbarxxforbarx"));
+}
