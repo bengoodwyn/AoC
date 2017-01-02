@@ -13,7 +13,11 @@ namespace AoC {
         using Coordinates = std::pair<int, int>;
         using Position = std::pair<Coordinates, std::string>;
 
-        static std::string find(std::string passcode) {
+        enum class PathType {
+            Shortest, Longest
+        };
+
+        static std::string find(std::string passcode, PathType type = PathType::Shortest) {
             const Coordinates desiredPosition{width - 1, height - 1};
             const Coordinates startingPosition{0, 0};
             std::vector<Position> exploredPositions;
