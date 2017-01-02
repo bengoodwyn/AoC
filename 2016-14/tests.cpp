@@ -7,7 +7,7 @@ using namespace AoC;
 class KeyGeneratorTests : public ::testing::Test {
 public:
     virtual void SetUp() override {
-        keyGenerator.reset(new KeyGenerator("abc"));
+        keyGenerator.reset(new KeyGenerator("abc", 0));
     }
 
     virtual void TearDown() override {

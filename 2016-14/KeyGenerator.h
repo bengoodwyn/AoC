@@ -1,3 +1,4 @@
+#include <cassert>
 #include <array>
 #include <cstdio>
 #include <string>
@@ -7,7 +8,7 @@
 namespace AoC {
     class KeyGenerator {
     public:
-        KeyGenerator(std::string salt) : salt(salt) {
+        KeyGenerator(std::string salt, int keyStretching) : salt(salt), keyStretching(keyStretching) {
         }
 
         std::string saltInteger(int integer) {
@@ -17,6 +18,7 @@ namespace AoC {
         const char* digest(std::string input) {
             static unsigned char digest[16];
             static std::array<char, (sizeof(digest) * 2) + 1> strDigest;
+            assert(0 == keyStretching);
             MD5(reinterpret_cast<const unsigned char*>(input.data()), input.length(), digest);
             snprintf(&strDigest.at(0), strDigest.size(),
                 "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", digest[0], digest[1], digest[2],
@@ -75,6 +77,7 @@ namespace AoC {
         }
 
     private:
-        std::string salt;
+        const std::string salt;
+        const int keyStretching;
     };
 }
