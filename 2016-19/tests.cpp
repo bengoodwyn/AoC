@@ -1,15 +1,7 @@
 #include <memory>
 #include <sstream>
 #include <gtest/gtest.h>
-
-namespace AoC {
-    class ElfGame {
-    public:
-        static int play(int elves) {
-            return 3;
-        }
-    };
-}
+#include "ElfGame.h"
 
 using namespace AoC;
 
