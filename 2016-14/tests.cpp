@@ -4,6 +4,7 @@
 #include <array>
 #include <cstdio>
 #include <string>
+#include <map>
 #include <openssl/md5.h>
 
 class KeyGenerator {
@@ -46,6 +47,33 @@ public:
         return std::string::npos != input.find(needle);
     }
 
+    int indexOfKey(int keyCount) {
+        int index = 0;
+        int numberOfFoundKeys = 0;
+        int indexOfLastFoundKey = -1;
+        std::map<int, char> watchingForQuintuples;
+        while (numberOfFoundKeys < keyCount) {
+            std::string possibleKey = digest(saltInteger(index));
+            char triple = findTriple(possibleKey);
+            if (triple != '\0') {
+                //std::cerr << "index " << index << " has triple " << triple << " " << possibleKey << std::endl;
+                watchingForQuintuples[index] = triple;
+            }
+            for (auto quintWatch : watchingForQuintuples) {
+                if ((quintWatch.first < index) && findQuintuple(possibleKey, quintWatch.second)) {
+                    indexOfLastFoundKey = quintWatch.first;
+                    //std::cerr << "index " << indexOfLastFoundKey << " was a key because of " << quintWatch.second << " (" << index << ")" << std::endl;
+                    ++numberOfFoundKeys;
+                }
+            }
+            if (index >= 1000) {
+                watchingForQuintuples.erase(index - 1000);
+            }
+            ++index;
+        }
+        return indexOfLastFoundKey;
+    }
+
 private:
     std::string salt;
 };
@@ -85,4 +113,8 @@ TEST_F(KeyGeneratorTests, CanFindAQuintupleOfAGivenCharacter) {
 
 TEST_F(KeyGeneratorTests, CanNotFindAQuintupleOfAGivenCharacter) {
     ASSERT_FALSE(keyGenerator->findQuintuple("fooxxxxxbar", 'y'));
+}
+
+TEST_F(KeyGeneratorTests, CanGetIndexOfNthKey) {
+    ASSERT_EQ(22728, keyGenerator->indexOfKey(64));
 }
