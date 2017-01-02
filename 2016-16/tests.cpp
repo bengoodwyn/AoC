@@ -29,6 +29,22 @@ namespace AoC {
             }
             return result.substr(0, length);
         }
+
+        static std::string checksum(std::string input) {
+            std::string result;
+            for (int i = 0; i < input.length(); i += 2) {
+                if (input.at(i) == input.at(i + 1)) {
+                    result += '1';
+                } else {
+                    result += '0';
+                }
+            }
+            if (0 == (result.length() % 2)) {
+                return checksum(result);
+            } else {
+                return result;
+            }
+        }
     };
 }
 
@@ -56,4 +72,8 @@ TEST_F(DragonTest, ExpansionTests) {
 
 TEST_F(DragonTest, GenerateTest) {
     ASSERT_EQ("10000011110010000111", Dragon::generate("10000", 20));
+}
+
+TEST_F(DragonTest, ChecksumTest) {
+    ASSERT_EQ("01100", Dragon::checksum("10000011110010000111"));
 }
