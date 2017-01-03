@@ -148,5 +148,6 @@ TEST(ScramblerTest, CanRunTheSampleTransormations) {
     ASSERT_EQ("abdec", scrambler.result());
     scrambler.scramble("rotate based on position of letter b");
     ASSERT_EQ("ecabd", scrambler.result());
-
+    scrambler.scramble("rotate based on position of letter d");
+    ASSERT_EQ("decab", scrambler.result());
 }
