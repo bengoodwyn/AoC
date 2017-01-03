@@ -2,6 +2,7 @@
 #include <sstream>
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <string>
 
 namespace AoC {
@@ -16,6 +17,10 @@ namespace AoC {
             stream >> std::skipws >> commandClass;
             if ("swap" == commandClass) {
                 scrambleSwap(stream);
+            } else if ("reverse" == commandClass) {
+                scrambleReverse(stream);
+            } else if ("rotate" == commandClass) {
+                scrambleRotate(stream);
             } else {
                 assert(false);
             }
@@ -26,6 +31,33 @@ namespace AoC {
         }
 
     private:
+        void scrambleReverse(std::istream& stream) {
+            std::string junk;
+            int firstIndex;
+            int lastIndex;
+            stream >> junk >> firstIndex >> junk >> lastIndex;
+            auto start = std::next(input.begin(), firstIndex);
+            auto end = std::next(input.begin(), lastIndex + 1);
+            std::reverse(start, end);
+        }
+
+        void scrambleRotate(std::istream& stream) {
+            std::string rotateType;
+            stream >> rotateType;
+            if ("left" == rotateType) {
+                scrambleRotateLeft(stream);
+            } else {
+                assert(false);
+            }
+        }
+
+        void scrambleRotateLeft(std::istream& stream) {
+            int count;
+            stream >> count;
+            count = count % input.length();
+            input = input.substr(count) + input.substr(0, count);
+        }
+
         void scrambleSwap(std::istream& stream) {
             std::string swapType;
             stream >> swapType;
@@ -82,4 +114,8 @@ TEST(ScramblerTest, CanRunTheSampleTransormations) {
     ASSERT_EQ("ebcda", scrambler.result());
     scrambler.scramble("swap letter d with letter b");
     ASSERT_EQ("edcba", scrambler.result());
+    scrambler.scramble("reverse positions 0 through 4");
+    ASSERT_EQ("abcde", scrambler.result());
+    scrambler.scramble("rotate left 1 step");
+    ASSERT_EQ("bcdea", scrambler.result());
 }
