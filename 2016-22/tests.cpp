@@ -1,3 +1,4 @@
+#include <fstream>
 #include <memory>
 #include <sstream>
 #include <gtest/gtest.h>
@@ -38,4 +39,19 @@ TEST_F(GridTest, CanFindViablePairCountOfASinglePairWithAFatNode) {
     grid->addNode({0, 1}, 10, 999);
     grid->addNode({1, 0}, 99999, 1);
     ASSERT_EQ(2, grid->countViablePairs());
+}
+
+TEST_F(GridTest, CanFindTheOneNodeWithRoomToStoreThisNode) {
+    std::ifstream input("preprocessed-input");
+    while (!input.eof()) {
+        int x;
+        int y;
+        int used;
+        int free;
+        input >> std::skipws >> x >> y >> used >> free;
+        grid->addNode({x, y}, used, free);
+    }
+    const auto expectedId = std::make_pair(13, 27);
+    auto id = grid->findIdWithFreeSpaceFor({30, 0});
+    ASSERT_EQ(expectedId, id);
 }

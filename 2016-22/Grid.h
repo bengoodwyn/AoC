@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <iomanip>
 #include <tuple>
 #include <map>
@@ -27,6 +28,19 @@ namespace AoC {
                 }
             }
             return count;
+        }
+
+        Id findIdWithFreeSpaceFor(Id id) {
+            Id foundId;
+            int count = 0;
+            for (auto targetNode : grid) {
+                if ((targetNode.first != id) && (grid[id].first <= targetNode.second.second)) {
+                    foundId = targetNode.first;
+                    ++count;
+                }
+            }
+            assert(1 == count);
+            return foundId;
         }
 
         void printGrid() {
