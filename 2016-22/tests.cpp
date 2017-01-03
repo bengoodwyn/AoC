@@ -2,36 +2,7 @@
 #include <sstream>
 #include <gtest/gtest.h>
 
-#include <tuple>
-#include <map>
-
-namespace AoC {
-    class Grid {
-    public:
-        using Id = std::pair<int, int>;
-        using DiskUsage = std::pair<unsigned int, unsigned int>;
-
-        void addNode(Id id, int used, int free) {
-            grid[id] = {used, free};
-        }
-
-        int countViablePairs() {
-            int count = 0;
-            for (auto sourceNode : grid) {
-                for (auto targetNode : grid) {
-                    if ((sourceNode.second.first > 0) && (sourceNode.first != targetNode.first) &&
-                        (sourceNode.second.first <= targetNode.second.second)) {
-                        ++count;
-                    }
-                }
-            }
-            return count;
-        }
-
-    private:
-        std::map<Id, DiskUsage> grid;
-    };
-}
+#include "Grid.h"
 
 using namespace AoC;
 
