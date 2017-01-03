@@ -132,4 +132,6 @@ TEST(ScramblerTest, CanRunTheSampleTransormations) {
     ASSERT_EQ("bcdea", scrambler.result());
     scrambler.scramble("move position 1 to position 4");
     ASSERT_EQ("bdeac", scrambler.result());
+    scrambler.scramble("move position 3 to position 0");
+    ASSERT_EQ("abdec", scrambler.result());
 }
