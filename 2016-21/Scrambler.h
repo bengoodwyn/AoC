@@ -1,7 +1,10 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
+#include <sstream>
 #include <string>
+#include <vector>
 
 namespace AoC {
     class Scrambler {
