@@ -21,6 +21,8 @@ namespace AoC {
                 scrambleReverse(stream);
             } else if ("rotate" == commandClass) {
                 scrambleRotate(stream);
+            } else if ("move" == commandClass) {
+                scrambleMove(stream);
             } else {
                 assert(false);
             }
@@ -39,6 +41,16 @@ namespace AoC {
             auto start = std::next(input.begin(), firstIndex);
             auto end = std::next(input.begin(), lastIndex + 1);
             std::reverse(start, end);
+        }
+
+        void scrambleMove(std::istream& stream) {
+            std::string junk;
+            int removeIndex;
+            int insertIndex;
+            stream >> junk >> removeIndex >> junk >> junk >> insertIndex;
+            auto character = input.at(removeIndex);
+            input.erase(removeIndex, 1);
+            input.insert(insertIndex, 1, character);
         }
 
         void scrambleRotate(std::istream& stream) {
@@ -118,4 +130,6 @@ TEST(ScramblerTest, CanRunTheSampleTransormations) {
     ASSERT_EQ("abcde", scrambler.result());
     scrambler.scramble("rotate left 1 step");
     ASSERT_EQ("bcdea", scrambler.result());
+    scrambler.scramble("move position 1 to position 4");
+    ASSERT_EQ("bdeac", scrambler.result());
 }
