@@ -12,6 +12,23 @@ namespace AoC {
         Scrambler(std::string input) : input(input) {
         }
 
+        void unscramble(std::string command) {
+            std::stringstream stream(command);
+            std::string commandClass;
+            stream >> std::skipws >> commandClass;
+            if ("swap" == commandClass) {
+                scrambleSwap(stream);
+            } else if ("reverse" == commandClass) {
+                scrambleReverse(stream);
+            } else if ("rotate" == commandClass) {
+                scrambleRotate(stream);
+            } else if ("move" == commandClass) {
+                scrambleMove(stream);
+            } else {
+                assert(false);
+            }
+        }
+
         void scramble(std::string command) {
             std::stringstream stream(command);
             std::string commandClass;

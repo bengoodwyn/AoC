@@ -31,3 +31,23 @@ TEST(ScramblerTest, CanRotateRight) {
     scrambler.scramble("rotate right 1 step");
     ASSERT_EQ("eabcd", scrambler.result());
 }
+
+TEST(ScramblerTest, CanUnscrambleTheSampleTransormations) {
+    Scrambler scrambler("decab");
+    scrambler.unscramble("rotate based on position of letter d");
+    ASSERT_EQ("ecabd", scrambler.result());
+    scrambler.unscramble("rotate based on position of letter b");
+    ASSERT_EQ("abdec", scrambler.result());
+    scrambler.unscramble("move position 3 to position 0");
+    ASSERT_EQ("bdeac", scrambler.result());
+    scrambler.unscramble("move position 1 to position 4");
+    ASSERT_EQ("bcdea", scrambler.result());
+    scrambler.unscramble("rotate left 1 step");
+    ASSERT_EQ("abcde", scrambler.result());
+    scrambler.unscramble("reverse positions 0 through 4");
+    ASSERT_EQ("edcba", scrambler.result());
+    scrambler.unscramble("swap letter d with letter b");
+    ASSERT_EQ("ebcda", scrambler.result());
+    scrambler.unscramble("swap position 4 with position 0");
+    ASSERT_EQ("abcde", scrambler.result());
+}
