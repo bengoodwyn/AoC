@@ -2,11 +2,14 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
 
 namespace AoC {
+    class Scrambler;
+
     class Scrambler {
     public:
         Scrambler(std::string input) : input(input) {
@@ -21,9 +24,9 @@ namespace AoC {
             } else if ("reverse" == commandClass) {
                 scrambleReverse(stream);
             } else if ("rotate" == commandClass) {
-                scrambleRotate(stream);
+                scrambleUnrotate(stream);
             } else if ("move" == commandClass) {
-                scrambleMove(stream);
+                scrambleUnmove(stream);
             } else {
                 assert(false);
             }
@@ -61,6 +64,16 @@ namespace AoC {
             std::reverse(start, end);
         }
 
+        void scrambleUnmove(std::istream& stream) {
+            std::string junk;
+            int removeIndex;
+            int insertIndex;
+            stream >> junk >> insertIndex >> junk >> junk >> removeIndex;
+            auto character = input.at(removeIndex);
+            input.erase(removeIndex, 1);
+            input.insert(insertIndex, 1, character);
+        }
+
         void scrambleMove(std::istream& stream) {
             std::string junk;
             int removeIndex;
@@ -82,6 +95,39 @@ namespace AoC {
                 scrambleRotateBased(stream);
             } else {
                 assert(false);
+            }
+        }
+
+        void scrambleUnrotate(std::istream& stream) {
+            std::string rotateType;
+            stream >> rotateType;
+            if ("left" == rotateType) {
+                scrambleRotateRight(stream);
+            } else if ("right" == rotateType) {
+                scrambleRotateLeft(stream);
+            } else if ("based" == rotateType) {
+                scrambleUnrotateBased(stream);
+            } else {
+                assert(false);
+            }
+        }
+
+        void scrambleUnrotateBased(std::istream& stream) {
+            std::string junk;
+            char letter;
+            stream >> junk >> junk >> junk >> junk >> letter;
+            // Rotate to the left until it is right
+            std::unique_ptr<Scrambler> scrambler;
+            int leftShift = 1;
+            while (true) {
+                std::string unrotated = input.substr(leftShift) + input.substr(0, leftShift);
+                scrambler.reset(new Scrambler(unrotated));
+                scrambler->scramble(std::string("rotate based on position of letter ") + letter);
+                if (scrambler->result() == input) {
+                    input = unrotated;
+                    return;
+                }
+                ++leftShift;
             }
         }
 
