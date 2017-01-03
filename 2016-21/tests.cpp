@@ -58,9 +58,21 @@ namespace AoC {
             stream >> rotateType;
             if ("left" == rotateType) {
                 scrambleRotateLeft(stream);
+            } else if ("based" == rotateType) {
+                scrambleRotateBased(stream);
             } else {
                 assert(false);
             }
+        }
+
+        void scrambleRotateBased(std::istream& stream) {
+            std::string junk;
+            char letter;
+            stream >> junk >> junk >> junk >> junk >> letter;
+            auto pos = input.find(letter);
+            int rotates = 1 + pos + ((pos >= 4) ? 1 : 0);
+            rotates = input.length() - (rotates % input.length());
+            input = input.substr(rotates) + input.substr(0, rotates);
         }
 
         void scrambleRotateLeft(std::istream& stream) {
@@ -134,4 +146,7 @@ TEST(ScramblerTest, CanRunTheSampleTransormations) {
     ASSERT_EQ("bdeac", scrambler.result());
     scrambler.scramble("move position 3 to position 0");
     ASSERT_EQ("abdec", scrambler.result());
+    scrambler.scramble("rotate based on position of letter b");
+    ASSERT_EQ("ecabd", scrambler.result());
+
 }
